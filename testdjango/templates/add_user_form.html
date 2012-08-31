@@ -1,0 +1,25 @@
+<html>
+<head>
+    <title>Add User</title>
+</head>
+<body>
+    {% if success %}
+        <p><b>User successfully added! Add another</b></p>
+    {% endif %}
+    {% if httperror %}
+        <p style="color: red;"><b>{{ httperror }}</b></p>
+    {% endif %}
+    {% if errors %}
+        <ul>
+            <p style="color: red;"><b>Something was wrong with your input:</b></p>
+            {% for error in errors %}
+            <p style="color: red;">{{ error }}</p>
+            {% endfor %}
+        </ul>
+    {% endif %}
+    <form action="" method="get">
+        <input type="text" name="q_user">
+        <input type="submit" name="add_user" value="Add">
+    </form>
+</body>
+</html>

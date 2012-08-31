@@ -1,5 +1,6 @@
 # Django settings for testdjango project.
 import dj_database_url
+import os.path
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
@@ -98,6 +99,7 @@ TEMPLATE_DIRS = (
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
+    os.path.join(os.path.dirname(__file__), 'templates').replace('\\','/'),
 )
 
 INSTALLED_APPS = (
@@ -107,8 +109,8 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'testdjango',
     'gunicorn',
-    'kombu.transport.django',
     'djcelery',
     # Uncomment the next line to enable the admin:
     # 'django.contrib.admin',
@@ -145,4 +147,4 @@ LOGGING = {
     }
 }
 
-BROKER_BACKEND = 'django'
+BROKER_URL = 'amqp://guest:guest@localhost:5672//'
