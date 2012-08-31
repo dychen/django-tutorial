@@ -1,6 +1,6 @@
 # Django settings for testdjango project.
 import dj_database_url
-import os.path
+import os
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
@@ -148,3 +148,6 @@ LOGGING = {
 }
 
 BROKER_URL = 'amqp://guest:guest@localhost:5672//'
+
+if 'heroku' in os.environ['_']:
+    from production_settings import *
