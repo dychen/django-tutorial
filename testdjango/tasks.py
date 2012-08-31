@@ -1,35 +1,29 @@
 from __future__ import absolute_import
 
 # Python imports
-import random
+import urllib2
+import json
 from datetime import timedelta
 
 # Django imports
-from testdjango.models import Pokemon
+from testdjango.models import FacebookUser
 
 # RabbitMQ imports
 from testdjango.celery import celery
 from celery.task.schedules import crontab
 from celery.decorators import periodic_task
 
-#@celery.task
-@periodic_task(run_every=timedelta(seconds=1))
-def make_pokemon():
-    first = ['Tiny', 'Small', 'Little', 'Big', 'Giant', 'Skinny', 'Chubby', 'Tall', 'Short', 'Super', 'Ultra', 'Mega']
-    second = ['fire', 'water', 'sand', 'air', 'wind', 'grass', 'leaf', 'tree', 'rock', 'stone']
-    third = ['cat', 'dog', 'rat', 'bird', 'horse', 'pig', 'cow', 'chicken', 'lion', 'tiger', 'wolf', 'deer', 'hippopotamus', 'octopus', 'squid', 'fish', 'shark', 'meerkat', 'lemur']
-    i1 = random.randint(0, len(first)-1)
-    i2 = random.randint(0, len(second)-1)
-    i3 = random.randint(0, len(third)-1)
-    poke_name = first[i1] + second[i2] + third[i3] + 'mon'
-
-    poke_num = random.randint(1, 9999)
-
-    types = ['Fire', 'Water', 'Electric', 'Grass', 'Rock', 'Ground', 'Fighting', 'Poison', 'Ghost', 'Psychic', 'Bug', 'Flying', 'Ice', 'Dragon', 'Dark', 'Steel', 'Normal']
-    poke_type = types[random.randint(0, len(types)-1)]
-
-    new_pokemon = Pokemon(name=poke_name, number=poke_num, type=poke_type)
-    new_pokemon.save()
-    return new_pokemon
-  
-
+#@periodic_task(run_every=crontab(minute="*/30"))
+@periodic_task(run_every=timedelta(seconds=3))
+def sync_database():
+    base_url = 'http://graph.facebook.com/%s'
+    all_facebook_users = FacebookUser.objects.all()
+    all_columns = FacebookUser._meta.fields
+    for facebook_user in all_facebook_users:
+        response = urllib2.urlopen(base_url % facebook_user.username)
+        json_response = json.loads(response.read())
+        for column in all_columns:
+            if column.name in json_response:
+                setattr(facebook_user, column.name, json_response[column.name])
+        facebook_user.save()
+    return True

@@ -1,4 +1,5 @@
 from django.conf.urls import patterns, include, url
+from testdjango.views import add_user, show_all_users, show_user_info
 
 # Uncomment the next two lines to enable the admin:
 # from django.contrib import admin
@@ -14,4 +15,8 @@ urlpatterns = patterns('',
 
     # Uncomment the next line to enable the admin:
     # url(r'^admin/', include(admin.site.urls)),
+
+    url(r'^add_user/$', add_user),
+    url(r'^all_users/$', show_all_users),
+    url(r'^users/([^/]+)/$', show_user_info),
 )
