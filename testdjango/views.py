@@ -36,9 +36,9 @@ def show_all_users(request):
     return HttpResponse(html)
 
 def show_user_info(request, input_name):
-    all_usernames = map(lambda x: x['username'], FacebookUser.objects.all().values('username'))
-    if input_name in all_usernames:
-        facebook_user = FacebookUser.objects.get(username=input_name)
+    all_usernames = map(lambda x: x['username'].lower(), FacebookUser.objects.all().values('username'))
+    if input_name.lower() in all_usernames:
+        facebook_user = FacebookUser.objects.get(username__iregex=r"(%s)" % input_name)
         html = "<html><body>"
         for column in FacebookUser._meta.fields:
             html += "%s: %s<br>" % (column.name, getattr(facebook_user, column.name))
