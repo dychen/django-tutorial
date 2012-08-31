@@ -107,8 +107,8 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'testdjango',
     'gunicorn',
-    'kombu.transport.django',
     'djcelery',
     # Uncomment the next line to enable the admin:
     # 'django.contrib.admin',
@@ -144,5 +144,3 @@ LOGGING = {
         },
     }
 }
-
-BROKER_BACKEND = 'django'
