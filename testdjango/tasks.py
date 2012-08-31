@@ -9,7 +9,6 @@ from datetime import timedelta
 from testdjango.models import FacebookUser
 
 # RabbitMQ imports
-from testdjango.celery import celery
 from celery.task.schedules import crontab
 from celery.decorators import periodic_task
 
