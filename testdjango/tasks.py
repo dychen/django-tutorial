@@ -19,10 +19,13 @@ def sync_database():
     all_facebook_users = FacebookUser.objects.all()
     all_columns = FacebookUser._meta.fields
     for facebook_user in all_facebook_users:
-        response = urllib2.urlopen(base_url % facebook_user.username)
-        json_response = json.loads(response.read())
-        for column in all_columns:
-            if column.name in json_response:
-                setattr(facebook_user, column.name, json_response[column.name])
-        facebook_user.save()
+        try:
+            response = urllib2.urlopen(base_url % facebook_user.username)
+            json_response = json.loads(response.read())
+            for column in all_columns:
+                if column.name in json_response:
+                    setattr(facebook_user, column.name, json_response[column.name])
+            facebook_user.save()
+        except urllib2.HTTPError:
+            continue
     return True
