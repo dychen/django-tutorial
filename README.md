@@ -30,7 +30,7 @@ This installs Python:
 
 	$ brew install python
 
-This adds Python to your PATH environment variable so you can run python commands from the terminal. Note that this is is not permanent, and you'll have to re-add it each time you restart the terminal, open up a new terminal window, or log out. To permanently add it to $PATH, you'll need to modify your .bashrc (see appendix for instructions).
+This adds Python to your PATH environment variable so you can run python commands from the terminal. Note that this is is not permanent, and you'll have to re-add it each time you restart the terminal, open up a new terminal window, or log out. To permanently add it to $PATH, you'll need to modify your .bashrc (see [appendix](#appendix) for instructions).
 
 	$ export PATH=/usr/local/share/python:$PATH
 
@@ -50,7 +50,7 @@ Both a production-scale Heroku app and a private Git repo cost money, so you're 
 
 Set up Version Control with Git
 -------------------------------
-Git is an awesome and powerful version control system that saves snapshots of your code's history. It's like having a bunch of save states that you can jump to whenever you want, and it also allows you to collaborate with other people without having to worry about messing up each other's code. A repository also serves as a backup for your code, so if your computer crashes or somehow gets destroyed, you'll still have a remote version of your code that you can retrieve. For a brief introduction to Git, there's a tutorial in the appendix.
+Git is an awesome and powerful version control system that saves snapshots of your code's history. It's like having a bunch of save states that you can jump to whenever you want, and it also allows you to collaborate with other people without having to worry about messing up each other's code. A repository also serves as a backup for your code, so if your computer crashes or somehow gets destroyed, you'll still have a remote version of your code that you can retrieve. For a brief introduction to Git, there's a tutorial in the [appendix](#appendix).
 
 Go to your home directory:
 
@@ -115,7 +115,7 @@ Test to make sure the development server works:
 
 Set up the Database with Postgres
 ---------------------------------
-We're going to use Postgres for our database. Databases are great because they're the best way to quickly store, organize, and retrieve tons of information. They're like huge spreadsheets that don't suck. Each database is composed of tables, each of which is used to store information about something (e.g. a car company may have a car table, a customers table, an employees table, and a transactions table). Each table has a schema, which is composed of the columns that make up the table (e.g. for the car table, it could have a car name column, a quantity column, and a price column) and the data types of the columns (e.g. for that same table, the car name would be a string, or VARCHAR, the quantity would be an integer, and the price would be a float or decimal), as well as things like primary and foreign keys that you don't really have to worry about yet. Each table is used to store data in the form of tuples (or records). For example, the car table could have the tuple (2007 Honda Civic, 20, 15000.00). For this tutorial, you don't need to know SQL, but it's highly recommended that you learn it. Go to the appendix for a list of a few quick Postgres commands.
+We're going to use Postgres for our database. Databases are great because they're the best way to quickly store, organize, and retrieve tons of information. They're like huge spreadsheets that don't suck. Each database is composed of tables, each of which is used to store information about something (e.g. a car company may have a car table, a customers table, an employees table, and a transactions table). Each table has a schema, which is composed of the columns that make up the table (e.g. for the car table, it could have a car name column, a quantity column, and a price column) and the data types of the columns (e.g. for that same table, the car name would be a string, or VARCHAR, the quantity would be an integer, and the price would be a float or decimal), as well as things like primary and foreign keys that you don't really have to worry about yet. Each table is used to store data in the form of tuples (or records). For example, the car table could have the tuple (2007 Honda Civic, 20, 15000.00). For this tutorial, you don't need to know SQL, but it's highly recommended that you learn it. Go to the [appendix](#appendix) for a list of a few quick Postgres commands.
 
 Postgres should already be installed, but if it isn't:
 
@@ -340,8 +340,9 @@ Try scaling up the workers. Initially, you'll have 0 workers running for your ne
 	$ heroku ps
 
 
+<a id="appendix"></a>
 Appendix
---------
+========
 
 Notes
 -----
@@ -352,9 +353,9 @@ Updating .bashrc
 ----------------
 
 Git Tutorial
-============
-Initializing
 ------------
+**Initializing**
+
 Go to your home directory:
 
 	$ cd ~
@@ -389,8 +390,8 @@ instead of
 "Remote" means the remote repository you push your code to or pull/fetch your code from. For our project, we'll have two remotes: Github and Heroku.
 
 
-Fetching and Branching
-----------------------
+**Fetching and Branching**
+
 Now that you've properly configured your .git/config file, you can fetch the contents of your Github repo. Fetch basically grabs the contents of your remote repository and rebasing puts whatever changes you made on top of those contents. Notice that below, we specify the branch we rebase off of as well (in this case, master). That means, we take all of the code currently in the master branch of the repository (as opposed to any other branch). If you run into any merge conflicts, talk to Will.
 
 	$ git fetch origin
@@ -422,8 +423,7 @@ Let's make a new branch again, change some stuff, and merge it into master:
 
 	$ git checkout -b another_branch
 
-Adding and Committing
----------------------
+**Adding and Committing**
 
 Make a new file called stuff.txt and add some stuff:
 
@@ -485,8 +485,8 @@ To revert your code to a previous state, do a reset. Your current changes will s
 
 	$ git reset {hash that you get from the commit log}
 
-Pushing and Merging
--------------------
+**Pushing and Merging**
+
 Now, you can push your changes to your remote repository. -u says to create the branch upstream (since it doesn't exist in your remote repository - in this case, Github - yet). If the branch was already there and you're pushing again, you wouldn't need the -u. origin specifies the remote repository (remember, we set origin to Github in our .git/config file). another_branch is the branch you're pushing from on your local machine:
 
 	$ git push -u origin another_branch
