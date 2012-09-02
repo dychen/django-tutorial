@@ -819,22 +819,22 @@ Then, we'll make a FacebookUser class:
 
 Next, add whatever fields you want the FacebookUser model to have to the class. The syntax is:
 
-	{column_name} = models.{FieldType}({field_parameters})
+	{field_name} = models.{FieldType}({field_parameters})
 
-For example, we want the id column to be the primary key of the field, and we want it to be a long and not null:
+For example, we want the id field to be the primary key of the model, and we want it to be a long and not null:
 
 	id = models.BigIntegerField(primary_key=True)
 
-Next, we want the name and the username columns to be strings which also shouldn't be null:
+Next, we want the name and the username fields to be strings which also shouldn't be null:
 
 	name = models.CharField(max_length=100)
 	username = models.CharField(max_length=50)
 
-Let's add a description column, which should be of type text, but can also be null:
+Let's add a description field, which should be of type text, but can also be null:
 
 	description = models.TextField(null=True)
 
-Here's the rest of the columns I added:
+Here's the rest of the fields I added:
 
 	about = models.TextField(null=True)
 	is_published = models.NullBooleanField(null=True)
