@@ -15,7 +15,7 @@ Index
 * [Set up the Processes (GUnicorn Server, Celeryd Worker, Celerybeat Scheduler)](#processes)
 * [Appendix](#appendix)
 	* [How to continue working on your project on a different computer](#setup)
-	* [How to update your .bashrc to run commands when you get the -bash: command not found error](#updatingbashrc)
+	* [How to update your .bash_profile to run commands when you get the -bash: command not found error](#updatingbashprofile)
 	* [A quick introduction to git](#gittutorial)
 	* [A small Postgres reference](#postgrescommands)
 	* [Code used in the guide](#code)
@@ -50,7 +50,7 @@ This installs Python:
 
 	$ brew install python
 
-This adds Python to your PATH environment variable so you can run python commands from the terminal. Note that this is is not permanent, and you'll have to re-add it each time you restart the terminal, open up a new terminal window, or log out. To permanently add it to $PATH, you'll need to modify your .bashrc (see [appendix](#updatingbashrc) for instructions).
+This adds Python to your PATH environment variable so you can run python commands from the terminal. Note that this is is not permanent, and you'll have to re-add it each time you restart the terminal, open up a new terminal window, or log out. To permanently add it to $PATH, you'll need to modify your .bash_profile (see [appendix](#updatingbashprofile) for instructions).
 
 	$ export PATH=/usr/local/share/python:$PATH
 
@@ -234,7 +234,7 @@ You may need to add /usr/local/sbin to your $PATH variable if you get one of the
 	-bash: rabbitmqctl: command not found
 	-bash: rabbitmq-server: command not found
 
-Temporary solution (for a permanent solution, see the [appendix](#updatingbashrc)):
+Temporary solution (for a permanent solution, see the [appendix](#updatingbashprofile)):
 
 	$ export PATH=/usr/local/sbin:$PATH
 
@@ -568,7 +568,7 @@ Congratulations, you're done! Now, go grab yourself a beer and let your applicat
 -----------------------------
 
 * [How to continue working on your project on a different computer](#setup)
-* [How to update your .bashrc to run commands when you get the -bash: command not found error](#updatingbashrc)
+* [How to update your .bash_profile to run commands when you get the -bash: command not found error](#updatingbashprofile)
 * [A quick introduction to git](#gittutorial)
 * [A small Postgres reference](#postgrescommands)
 * [Code used in the guide](#code)
@@ -598,21 +598,21 @@ Suppose you want to continue working on your project from a different computer. 
 	$ heroku keys:add
 
 
-<a name="updatingbashrc">Updating .bashrc</a>
+<a name="updatingbashprofile">Updating .bash_profile</a>
 -------------------------------------------
-If you want to be able to run commands such as rabbitmqctl from anywhere, you have to add its source directory to the $PATH environment variable. However, this variable isn't shared across different terminal sessions, so it gets reset every time you log in and out or open a new terminal window. To fix this, you need to modify your user's .bashrc, which is located in your home directory (~) and gets loaded up every time a new shell window opens. When you're modifying this, you have to know the path to the source directory of the commands you want to be able to run from anywhere.
+If you want to be able to run commands such as rabbitmqctl from anywhere, you have to add its source directory to the $PATH environment variable. However, this variable isn't shared across different terminal sessions, so it gets reset every time you log in and out or open a new terminal window. To fix this, you need to modify your user's .bash_profile, which is located in your home directory (~) and gets loaded up every time a new shell window opens. (For a discussion on .bash_profile vs .bashrc, read [this](http://www.joshstaiger.org/archives/2005/07/bash_profile_vs.html)). When you're modifying this, you have to know the path to the source directory of the commands you want to be able to run from anywhere.
 
-For rabbitmqctl and rabbitmq-server, those commands are located in /usr/local/sbin. To add this to your bashrc, in ~/.bashrc, add the following line:
+For rabbitmqctl and rabbitmq-server, those commands are located in /usr/local/sbin. To add this to your bash_profile, in ~/.bash_profile, add the following line:
 
 	PATH=$PATH:/usr/local/sbin
 
 Or, you can do the following:
 
-	echo 'PATH=$PATH:/usr/local/sbin' >> ~/.bashrc
+	$ echo 'PATH=$PATH:/usr/local/sbin' >> ~/.bash_profile
 
-Now, you have to reload the shell for the changes to take place. The following command just reloads ~/.bashrc, which is just as good:
+Now, you have to reload the shell for the changes to take place. The following command just reloads ~/.bash_profile, which is just as good:
 
-	exec bash
+	$ source ~/.bash_profile
 
 Ror Python, do the same thing, except the path will be /usr/local/share/python.
 
