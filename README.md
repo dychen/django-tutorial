@@ -13,13 +13,13 @@ Index
 * Write an Application with Django
 * Deploy to Heroku
 * Set up the Processes (GUnicorn Server, Celeryd Worker, Celerybeat Scheduler)
-* Appendix
+* [Appendix](#appendix)
 	* [How to continue working on your project on a different computer](#setup)
 	* [How to update your .bashrc to run commands when you get the -bash: command not found error](#updatingbashrc)
 	* [A quick introduction to git](#gittutorial)
 	* [A small Postgres reference](#postgrescommands)
 	* [Code used in the guide](#code)
-		* [models.py][models.py]
+		* [models.py](#models.py)
 		* [views.py](#views.py)
 		* [add_user_form.html](#add_user_form.html)
 		* [tasks.py](#tasks.py)
