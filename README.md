@@ -862,9 +862,9 @@ First, let's take care of our imports.
 	from django.shortcuts import render_to_response
 	from testdjango.facebookgraph.models import FacebookUser
 
-If you're looking for the code for add_user, go [here](#add_user)
-If you're looking for the code for show_all_users, go [here](#show_all_users)
-If you're looking for the code for show_user_info, go [here](#show_user_info)
+*If you're looking for the code for add_user, go [here](#add_user)
+*If you're looking for the code for show_all_users, go [here](#show_all_users)
+*If you're looking for the code for show_user_info, go [here](#show_user_info)
 
 <a name="add_user">add_user()</a>
 
@@ -880,50 +880,50 @@ This is a little complicated to tackle at once, so let's break it down into smal
 
 1. Create the add_user function. Remember, for any view function that's mapped to a URL, you'll be receiving an HTTP request as a parameter.
 
-	def add_user(request):
+		def add_user(request):
 
 2. Inside that function, let's make a list to contain all of the error strings we want to print out in case the client sucks at inputting usernames.
 
-	errors = []
+		errors = []
 
 3. Now, we want to handle the GET request. If the client clicked the "Add User" button, the parameter "q_user" will be in the GET request. The name "q_user" is defined in the template (we'll get to that later). For now, just know it's going to be passed in the response if the button is clicked and not if the button isn't.
 
-	if 'q_user' in request.GET:
-	    # ...stuff
-	else:
-	    # ...stuff
+		if 'q_user' in request.GET:
+		    # ...stuff
+		else:
+		    # ...stuff
 
 4. Let's tackle the easier part of the if/else statement first (the stuff in the else block). If the button isn't clicked, then we just want to render our template normally. So, we call the render_to_response function located in the django.shortcuts library.
 
-	return render_to_response('add_user_form.html')
+		return render_to_response('add_user_form.html')
 
 5. Now, for the hard(er) part (the stuff in the if block). Let's call q the actual search input we got. Then, if q is empty, we want to add an error message to the errors list. We can add more error checking if we want (like checking to make sure q has at least one letter in it), but I think this is good enough. Now that we have our errors, we can call the render_to_response function, this time passing a second parameter, which is a dictionary (mapping) of variable names and their values that the template will take care of.
 
-	q = request.GET['q_user']
-	if not q:
-	    errors.append('Enter a search term.')
-	    return render_to_response('add_user_form.html', {'errors': errors})
-	else:
-	    # ...stuff
+		q = request.GET['q_user']
+		if not q:
+		    errors.append('Enter a search term.')
+		    return render_to_response('add_user_form.html', {'errors': errors})
+		else:
+		    # ...stuff
 
 6. Now, we can fill out that else block. If the query's not empty, then we want to try pulling that user's data from Facebook. The retrieve_facebook_user_data helper function takes a query string (like "coca-cola") and returns the parsed JSON response (which should be a dictionary of column names to column values) if successful and an error string otherwise.
 
-	facebook_data = retrieve_facebook_user_data(q)
+		facebook_data = retrieve_facebook_user_data(q)
 
 7. Now, it's time to handle more errors! If we got back an error string, we want to render the same page, but with a different error message. This time, we'll give the mapping in the extra parameter the name "httperror" mapped to the Error string that the function returned.
 
-	if type(facebook_data) is str and 'Error:' in facebook_data:
-	    return render_to_response('add_user_form.html', {'httperror': facebook_data})
+		if type(facebook_data) is str and 'Error:' in facebook_data:
+		    return render_to_response('add_user_form.html', {'httperror': facebook_data})
 
 8. Otherwise, if we got a nicely parsed JSON response, it'll be a dictionary, so we can call the add_user_to_db helper function that I wrote to add the user to the database. Then, we'll render the same page, but this time with a success message. (Note that add_user_to_db may not be able to successfully parse the input. In this case, we'd want to add some more error handling, but I'll let you do that on your own if you really want to).
 
-	elif type(facebook_data) is dict:
-	    return render_to_response('add_user_form.html', {'success': True})
+		elif type(facebook_data) is dict:
+		    return render_to_response('add_user_form.html', {'success': True})
 
 9. Finally, if neither the if or the elif got executed, something weird happened, so just render the normal add_user_form template. (If we were more rigorous, we'd want to handle this error, but we're not!)
 
-	else:
-	    return render_to_response('add_user_form.html')
+		else:
+		    return render_to_response('add_user_form.html')
 
 10. Add in the two helper functions that I wrote (retrieve_facebook_user_data and add_user_to_form).
 
