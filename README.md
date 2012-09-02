@@ -477,6 +477,8 @@ Remember, you can check how your workers are doing in real-time:
 	$ heroku logs --tail --ps celeryd --app django-tutorial
 	$ heroku logs --tail --ps celerybeat --app django-tutorial
 
+You can also go to [https://dashboard.heroku.com/apps/django-tutorial/](https://dashboard.heroku.com/apps/django-tutorial/) (or replace django-tutorial with whatever your app name is) to get a nice GUI for administrative stuff.
+
 Congratulations, you're done! You've just created a full-functioning production-ready application in about an hour. Now, you should be able to open a web browser and go to your URL (in our case, it's [http://django-tutorial.herokuapp.com](http://django-tutorial.herokuapp.com)). Note that since we haven't made a root page, we'll get a 404 error if we just go to that address.
 
 * Go to [http://django-tutorial.herokuapp.com/add_user](http://django-tutorial.herokuapp.com/add_user)
@@ -495,7 +497,7 @@ Appendix
 * [A quick introduction to git](#gittutorial)
 * [A small Postgres reference](#postgrescommands)
 * [Code used in the guide](#code)
-	- [models.py](#models.py)
+	- [models.py][models.py]
 	- [views.py](#views.py)
 	- [add_user_form.html](#add_user_form.html)
 	- [tasks.py](#tasks.py)
@@ -756,8 +758,7 @@ Exit the database:
 ###<a id="code"></a>
 Code Reference
 --------------
-###<a id="models.py"></a>
-**models.py**
+**models.py** [models.py]
 
 ###<a id="views.py"></a>
 **views.py**
