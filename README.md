@@ -24,7 +24,7 @@ Index
 		* [add_user_form.html](#add_user_form.html)
 		* [tasks.py](#tasks.py)
 
-<a id="introduction">Introduction</a>
+<a name="introduction">Introduction</a>
 -------------------------------------
 This is a pretty simple yet extensive tutorial on how to go from a simple Python script to a full-functioning production-ready web application. We'll be creating a small application that allows an end-user to search for a user in Facebook's graph API and store that user's information. We'll also provide some simple API routes to display all users and get any user's information. Finally, we'll have a backend job that periodically hits Facebook to update all the information in our database.
 
@@ -38,7 +38,7 @@ The tools that we'll be using are:
 * **Heroku** as the production platform
 
 
-<a id="installpython">Install Python, Pip, and Venv</a>
+<a name="installpython">Install Python, Pip, and Venv</a>
 -------------------------------------------------------
 Obviously, to start a Django project, you need to have Python installed. This requires [Homebrew](https://github.com/mxcl/homebrew/wiki/installation), which should already be installed. We're also going to install [Pip](http://pypi.python.org/pypi/pip), which is an easy way to install the Python packages we'll need later. Finally, we're going to install [VirtualEnv](http://pypi.python.org/pypi/virtualenv), which creates an isolated Python environment for our Django project. This is important because we know that our code will work with a particular version of Python (the one we are currently using). It makes sure the code in our project doesn't break when we inevitably do machine-wide Python updates some time in the future. First, open up a terminal.
 
@@ -63,12 +63,12 @@ This installs Venv:
 	$ pip install virtualenv
 
 
-<a id="requestapps">Request a Heroku Application and a Git Repository</a>
+<a name="requestapps">Request a Heroku Application and a Git Repository</a>
 -------------------------------------------------------------------------
 Both a production-scale Heroku app and a private Git repo cost money, so you're going to have to ask Will to set one of those up for you with the proper tools installed.
 
 
-<a id="git">Set up Version Control with Git</a>
+<a name="git">Set up Version Control with Git</a>
 -----------------------------------------------
 Git is an awesome and powerful version control system that saves snapshots of your code's history. It's like having a bunch of save states that you can jump to whenever you want, and it also allows you to collaborate with other people without having to worry about messing up each other's code. A repository also serves as a backup for your code, so if your computer crashes or somehow gets destroyed, you'll still have a remote version of your code that you can retrieve. For a brief introduction to Git, there's a tutorial in the [appendix](#gittutorial).
 
@@ -86,7 +86,7 @@ Finally, set up your .gitignore file, which resides in the same level as your .g
 	*.pyc
 
 
-<a id="startproject">Set up the Project</a>
+<a name="startproject">Set up the Project</a>
 -------------------------------------------
 Now, we're going to set up the Django project. You can call it whatever you want, but ideally you'll give it the same name that Will gives the Heroku app to avoid any confusion down the line. In this tutorial, we called our main project directory django-tutorial (when we made our git repo). Within the main project directory, we can start a Django project. I'm going to call the project we're going to make testdjango, but you'll probably want to give yours a more descriptive name whenever you make your own project. Then, we're going to make an application for that project. Each project can have one or more applications, but we'll just make one for our purposes. We'll call it facebookgraph because it hits Facebook's Graph API and pulls user data from that.
 
@@ -142,7 +142,7 @@ Test to make sure the development server works:
 	$ python manage.py runserver
 
 
-<a id="installdependencies">Install Dependencies (Local)</a>
+<a name="installdependencies">Install Dependencies (Local)</a>
 ------------------------------------------------------------
 Now, we want to make sure everything we're going to need later is installed on our local machine. Make a file in your base project directory (it should live in ~/django-tutorial) called requirements.txt:
 	
@@ -182,7 +182,7 @@ Also, there are two more things you need to install that aren't managed by pip.
 **REMINDER:** If you want to work on a project on another computer, you're going to have to re-run this entire process, as well as a few other commands. See the [appendix](#setup) for details.
 
 
-<a id="postgres">Set up the Database with Postgres (Local)</a>
+<a name="postgres">Set up the Database with Postgres (Local)</a>
 --------------------------------------------------------------
 We're going to use Postgres for our database. Databases are great because they're the best way to quickly store, organize, and retrieve tons of information. They're like huge spreadsheets that don't suck. Each database is composed of tables, each of which is used to store information about something (e.g. a car company may have a car table, a customers table, an employees table, and a transactions table). Each table has a schema, which is composed of the columns that make up the table (e.g. for the car table, it could have a car name column, a quantity column, and a price column) and the data types of the columns (e.g. for that same table, the car name would be a string, or VARCHAR, the quantity would be an integer, and the price would be a float or decimal), as well as things like primary and foreign keys that you don't really have to worry about yet. Each table is used to store data in the form of tuples (or records). For example, the car table could have the tuple (2007 Honda Civic, 20, 15000.00). For this tutorial, you don't need to know SQL, but it's highly recommended that you learn it. Go to the [appendix](#postgrescommands) for a list of a few quick Postgres commands.
 
@@ -203,7 +203,7 @@ This should replace the current DATABASES environment variable in settings.py. T
 So, in our example, we're using the testdjango_development database with no user and password on port 5432.
 
 
-<a id="celery">Set up the Background Jobs with Celery and RabbitMQ (Local)</a>
+<a name="celery">Set up the Background Jobs with Celery and RabbitMQ (Local)</a>
 ------------------------------------------------------------------------------
 Celery is queuing and messaging service that lets you easily manage background jobs. RabbitMQ is the broker (queuing and messaging system system) that we're going to use with Celery that makes it really easy to manage the job queues and specific tasks (especially on Heroku). The processes that we'll be running are celeryd, which is the Celery worker that executes our background tasks, and celerybeat, which schedules those tasks.
 
@@ -248,7 +248,7 @@ Now, you can run stuff locally. In four separate terminal windows, run these thr
 This doesn't do anything yet, but you'll be using these commands in the near future.
 
 
-<a id="django>Write an Application with Django</a>
+<a name="django>Write an Application with Django</a>
 --------------------------------------------------
 In this section, I will give you a brief overview of creating a full-functioning Django application. Django is a lightweight web framework (sort of like Rails, but much lighter) that makes it easy to develop web applications. It's not at all meant to be a full guide. Rather, it's a brief introduction so that you can quickly get something running. I strongly encourage you to check out the [Django tutorial](http://www.djangobook.com/en/1.0/), which is extremely comprehensive and very straightforward and easy to understand.
 
@@ -359,7 +359,7 @@ Here's an outline of what we're going to do:
 Congratulations, you've made your web application! Locally, you should be able to add users to your database, view user information, and automatically periodically update that information. Hopefully, you understand all the code here. If not, you *really* should look at the code section of the [appendix](#code). *Seriously.* Now, it's time to put our app into production.
 
 
-<a id="heroku>Deploy to Heroku</a>
+<a name="heroku>Deploy to Heroku</a>
 ----------------------------------
 Heroku is an online web service that runs your production application (kind of like a server). Whereas your development application will be run locally, your production application will live on Heroku.
 
@@ -424,7 +424,7 @@ And you can follow a specific process:
 	$ heroku logs --tail --ps {job_name} --app django-tutorial
 
 
-<a id="processes">Set up the Processes (GUnicorn Server, Celeryd Worker, Celerybeat Scheduler)</a>
+<a name="processes">Set up the Processes (GUnicorn Server, Celeryd Worker, Celerybeat Scheduler)</a>
 --------------------------------------------------------------------------------------------------
 **GUnicorn**
 
@@ -516,7 +516,7 @@ Congratulations, you're done! You've just created a full-functioning production-
 * Wait 10 minutes and then see if Adaptly's gotten any more likes by refreshing the page.
 
 
-<a id="appendix">Appendix</a>
+<a name="appendix">Appendix</a>
 =============================
 
 * [How to continue working on your project on a different computer](#setup)
@@ -529,7 +529,7 @@ Congratulations, you're done! You've just created a full-functioning production-
 	* [add_user_form.html](#add_user_form.html)
 	* [tasks.py](#tasks.py)
 
-<a id="setup">Quick Setup Instructions</a>
+<a name="setup">Quick Setup Instructions</a>
 ------------------------------------------
 Suppose you want to continue working on your project from a different computer. Here's what you need to do to get started, assuming you've pushed your current code (that includes your requirements.txt) to git.
 
@@ -549,7 +549,7 @@ Suppose you want to continue working on your project from a different computer. 
 	$ brew install rabbitmq
 
 
-<a id="updatingbashrc">Updating .bashrc</a>
+<a name="updatingbashrc">Updating .bashrc</a>
 -------------------------------------------
 If you want to be able to run commands such as rabbitmqctl from anywhere, you have to add its source directory to the $PATH environment variable. However, this variable isn't shared across different terminal sessions, so it gets reset every time you log in and out or open a new terminal window. To fix this, you need to modify your user's .bashrc, which is located in your home directory (~) and gets loaded up every time a new shell window opens. When you're modifying this, you have to know the path to the source directory of the commands you want to be able to run from anywhere. For rabbitmqctl and rabbitmq-server, those commands are located in /usr/local/sbin. To add this to your bashrc, in ~/.bashrc, add the following line:
 
@@ -563,7 +563,7 @@ Now, you have to reload the shell for the changes to take place. The following c
 
 	exec bash
 
-<a id="gittutorial">Git Tutorial</a>
+<a name="gittutorial">Git Tutorial</a>
 ------------------------------------
 **Initializing**
 
@@ -717,7 +717,7 @@ If you merge the changes on your local machine, first switch to your local maste
 That was a quick and dirty introduction to Git, but there's a lot more that it has to offer. There are many awesome [Git tutorials](http://sixrevisions.com/resources/git-tutorials-beginners/) online if you want to learn more.
 
 
-<a id="postgrescommands">Postgres Commands</a>
+<a name="postgrescommands">Postgres Commands</a>
 ----------------------------------------------
 Here are a few commands to help you navigate your database (some are Postgres-specific):
 
@@ -789,16 +789,16 @@ Exit the database:
 
 	\q
 
-<a id="code">Code Reference</a>
+<a name="code">Code Reference</a>
 -------------------------------
-<a id="models.py">**models.py**</a>
+<a name="models.py">**models.py**</a>
 
 
-<a id="views.py">**views.py**</a>
+<a name="views.py">**views.py**</a>
 
 
-<a id="add_user_form.html">**add_user_form.html**</a>
+<a name="add_user_form.html">**add_user_form.html**</a>
 
 
-<a id="tasks.py">**tasks.py**</a>
+<a name="tasks.py">**tasks.py**</a>
 
