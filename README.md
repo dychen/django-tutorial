@@ -26,16 +26,16 @@ Index
 
 <a name="introduction">Introduction</a>
 -------------------------------------
-This is a pretty simple yet extensive tutorial on how to go from a simple Python script to a full-functioning production-ready web application. We'll be creating a small application that allows an end-user to search for a user in Facebook's graph API and store that user's information. We'll also provide some simple API routes to display all users and get any user's information. Finally, we'll have a backend job that periodically hits Facebook to update all the information in our database.
+This is a pretty simple yet extensive tutorial on how to go from a Python script that you want to run automatically every so often to a full-functioning production-ready web application. We'll be creating a small application that allows a client to search for a user in Facebook's graph API and store that user's information. We'll also provide some simple API routes to display all users and get any given user's information. Finally, we'll have a backend job that periodically hits Facebook to update all the information in our database.
 
 The tools that we'll be using are:
 
-* **Django** as the web framework
-* **Postgres** as the persistent storage (database)
-* **Celery** as the job queue
-* **RabbitMQ** as the broker for Celery
-* **Git** as the version control system
-* **Heroku** as the production platform
+* [**Django**](https://www.djangoproject.com/) as the web framework
+* [**Postgres**](http://www.postgresql.org/) as the persistent storage (database)
+* [**Celery**](http://celeryproject.org/) as the job queue
+* [**RabbitMQ**](http://www.rabbitmq.com/) as the broker for Celery
+* [**Git**](https://github.com/) as the version control system
+* [**Heroku**](http://www.heroku.com/) as the production platform
 
 
 <a name="installpython">Install Python, Pip, and Venv</a>
