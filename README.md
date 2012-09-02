@@ -423,7 +423,7 @@ Deploy your application to Heroku:
 	$ git commit -m "Set up the project and application with Postgres. Created an empty Procfile and a requirements.txt with all necessary dependencies."
 	$ git push heroku master
 
-Check that everything is working. This gives you a list of currently running processes. Eventually, we'll have 3 processes: one for the web application, one for the celery worker that runs our background job, and one for celerybeat, which schedules the periodic tasks the celery worker performs. The --app parameter specifies the application name. Again, your application won't be called django-tutorial, so just replace that with whatever your app is called.
+Check that everything is working. This gives you a list of currently running processes. Eventually, we'll have 3 processes: one for the web application, one for the celery worker that runs our background job, and one for celerybeat, which schedules the periodic tasks the celery worker performs. The --app parameter specifies the application name. Again, your application won't be called django-tutorial, so just replace that with whatever your app is called. Note that shouldn't have to specify the --app parameter if you've been following along with the tutorial. This is because we've added the Heroku remote to our .git/config file, and we only have one Heroku remote, so it recognizes that application whenever we run any Heroku command.
 
 	$ heroku ps --app django-tutorial
 
@@ -438,6 +438,24 @@ You can also get real-time updates by using tail:
 And you can follow a specific process:
 
 	$ heroku logs --tail --ps {job_name} --app django-tutorial
+
+Also, you can run any bash command remotely on Heroku that you could in your own terminal. Just do:
+
+	$ heroku run {command}
+
+For example, you can check out your Heroku server's $PATH variable:
+
+	$ heroku run echo '$PATH'
+
+Or, check out Python's or Django's environment variables on Heroku:
+
+	$ heroku run python                 // This is just another Python shell
+	$ heroku run python manage.py shell // This shell is specific to your Django app
+
+Inside the shell:
+
+	>>> import os
+	>>> os.environ
 
 
 <a name="processes">Set up the Processes (GUnicorn Server, Celeryd Worker, Celerybeat Scheduler)</a>
@@ -519,13 +537,15 @@ Remember, you can check how your workers are doing in real-time:
 
 You can also go to [https://dashboard.heroku.com/apps/django-tutorial/](https://dashboard.heroku.com/apps/django-tutorial/) (replace django-tutorial with whatever your app name is) to get a nice GUI for administrative stuff.
 
-Congratulations, you're done! You've just created a full-functioning production-ready application in about an hour. Now, you should be able to open a web browser and go to your URL (in our case, it's [http://django-tutorial.herokuapp.com](http://django-tutorial.herokuapp.com)). Note that since we haven't made a root page, we'll get a 404 error if we just go to that address.
+You've just created a full-functioning production-ready application. Now, you should be able to open a web browser and go to your URL (in our case, it's [http://django-tutorial.herokuapp.com](http://django-tutorial.herokuapp.com)). Note that since we haven't made a root page, we'll get a 404 error if we just go to that address.
 
 * Go to [http://django-tutorial.herokuapp.com/add_user](http://django-tutorial.herokuapp.com/add_user)
 * Add some users (like Adaptly)
 * Check out all of the users currently in the database at [http://django-tutorial.herokuapp.com/all_users](http://django-tutorial.herokuapp.com/all_users)
 * Check out Adaptly's stats at [http://django-tutorial.herokuapp.com/users/adaptly](http://django-tutorial.herokuapp.com/users/adaptly)
 * Wait 10 minutes and then see if Adaptly's gotten any more likes by refreshing the page.
+
+Congratulations, you're done! Now, go grab yourself a beer and let your application do its stuff.
 
 
 <a name="appendix">Appendix</a>
