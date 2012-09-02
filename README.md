@@ -1,6 +1,28 @@
 Guide: Script to Production
 ===========================
-
+Index
+-----
+* Introduction
+* Install Python, Pip, and Venv
+* Request a Heroku Application and a Git Repository
+* Set up Version Control with Git
+* Set up the Project
+* Install Dependencies
+* Set up the Database with Postgres (Local)
+* Set up the Background Jobs with Celery and RabbitMQ (Local)
+* Write an Application with Django
+* Deploy to Heroku
+* Set up the Processes (GUnicorn Server, Celeryd Worker, Celerybeat Scheduler)
+* Appendix
+	* [How to continue working on your project on a different computer](#setup)
+	* [How to update your .bashrc to run commands when you get the -bash: command not found error](#updatingbashrc)
+	* [A quick introduction to git](#gittutorial)
+	* [A small Postgres reference](#postgrescommands)
+	* [Code used in the guide](#code)
+		* [models.py][models.py]
+		* [views.py](#views.py)
+		* [add_user_form.html](#add_user_form.html)
+		* [tasks.py](#tasks.py)
 
 Introduction
 ------------
@@ -114,8 +136,8 @@ Test to make sure the development server works:
 	$ python manage.py runserver
 
 
-Installing Dependencies (Local)
--------------------------------
+Install Dependencies (Local)
+----------------------------
 Now, we want to make sure everything we're going to need later is installed on our local machine. Make a file in your base project directory (it should live in ~/django-tutorial) called requirements.txt:
 	
 	Django==1.4.1
@@ -175,8 +197,8 @@ This should replace the current DATABASES environment variable in settings.py. T
 So, in our example, we're using the testdjango_development database with no user and password on port 5432.
 
 
-Set up your Background Jobs with Celery and RabbitMQ (Local)
-------------------------------------------------------------
+Set up the Background Jobs with Celery and RabbitMQ (Local)
+-----------------------------------------------------------
 Celery is queuing and messaging service that lets you easily manage background jobs. RabbitMQ is the broker (queuing and messaging system system) that we're going to use with Celery that makes it really easy to manage the job queues and specific tasks (especially on Heroku). The processes that we'll be running are celeryd, which is the Celery worker that executes our background tasks, and celerybeat, which schedules those tasks.
 
 You should've already installed Celery as well, so again, we need to make sure Django knows to use it. In testdjango/settings.py, add the following to the INSTALLED_APPS variable:
@@ -220,8 +242,8 @@ Now, you can run stuff locally. In four separate terminal windows, run these thr
 This doesn't do anything yet, but you'll be using these commands in the near future.
 
 
-Writing an Application with Django
-----------------------------------
+Write an Application with Django
+--------------------------------
 In this section, I will give you a brief overview of creating a full-functioning Django application. Django is a lightweight web framework (sort of like Rails, but much lighter) that makes it easy to develop web applications. It's not at all meant to be a full guide. Rather, it's a brief introduction so that you can quickly get something running. I strongly encourage you to check out the [Django tutorial](http://www.djangobook.com/en/1.0/), which is extremely comprehensive and very straightforward and easy to understand.
 
 Previously, you made your Django app (called facebookgraph). Now, we're going to actually add functionality to that. Take a look at your project directory (testdjango):
@@ -497,10 +519,10 @@ Appendix
 * [A quick introduction to git](#gittutorial)
 * [A small Postgres reference](#postgrescommands)
 * [Code used in the guide](#code)
-	- [models.py][models.py]
-	- [views.py](#views.py)
-	- [add_user_form.html](#add_user_form.html)
-	- [tasks.py](#tasks.py)
+	* [models.py][models.py]
+	* [views.py](#views.py)
+	* [add_user_form.html](#add_user_form.html)
+	* [tasks.py](#tasks.py)
 
 <a id="setup"></a>
 Quick Setup Instructions
@@ -524,7 +546,7 @@ Suppose you want to continue working on your project from a different computer. 
 <a id="updatingbashrc"></a>
 Updating .bashrc
 ----------------
-I
+In progress...
 
 
 <a id="gittutorial"></a>
@@ -755,16 +777,17 @@ Exit the database:
 
 	\q
 
-###<a id="code"></a>
+<a id="code"></a>
 Code Reference
 --------------
-**models.py** [models.py]
+<a id="models.py"></a>
+**models.py**
 
-###<a id="views.py"></a>
+<a id="views.py"></a>
 **views.py**
 
-###<a id="add_user_form.html"></a>
+<a id="add_user_form.html"></a>
 **add_user_form.html**
 
-###<a id="tasks.py"></a>
+<a id="tasks.py"></a>
 **tasks.py**
