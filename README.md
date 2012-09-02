@@ -250,7 +250,7 @@ This doesn't do anything yet, but you'll be using these commands in the near fut
 
 <a name="django">Write an Application with Django</a>
 --------------------------------------------------
-In this section, I will give you a brief overview of creating a full-functioning Django application. Django is a lightweight web framework (sort of like Rails, but much lighter) that makes it easy to develop web applications. It's not at all meant to be a full guide. Rather, it's a brief introduction so that you can quickly get something running. I strongly encourage you to check out the [Django tutorial](http://www.djangobook.com/en/1.0/), which is extremely comprehensive and very straightforward and easy to understand.
+In this section, I will give you a brief overview of creating a full-functioning Django application. Django is a lightweight web framework (sort of like Rails, but much lighter) that makes it easy to develop web applications. It's not at all meant to be a full guide. Rather, it's a brief introduction so that you can quickly get something running. I **strongly** encourage you to check out the [Django tutorial](http://www.djangobook.com/en/1.0/), which is extremely comprehensive and very straightforward and easy to understand.
 
 Previously, you made your Django app (called facebookgraph). Now, we're going to actually add functionality to that. Take a look at your project directory (testdjango):
 
@@ -993,7 +993,7 @@ Finally, we return the HttpResponse, which will render the HTML for us.
 
 	return HttpResponse(html)
 
-Note that that was just a very short example of how to interact with models in your views. However, this is a very broad and important topic. You're going to want to reference the following if you want to use models in the future.
+Note that that was just a very short example of how to interact with models in your views. However, this is a very broad and important topic. You're going to want to reference the following if you want to use models in the future:
  
 * [A more comprehensive example of interacting with models](http://www.djangobook.com/en/1.0/chapter05/) (starting at the section titled Inserting and Updating Data).
 * [Documentation on interacting with models](https://docs.djangoproject.com/en/dev/topics/db/queries/)
@@ -1053,6 +1053,10 @@ Now, it's time to [go back to the guide](#djangopt3)
 
 <a name="tasks.py">**tasks.py**</a>
 
+Here, we're going to write a task that can be executed periodically. In this case, we'll make the task hit the Facebook Graph API and update the information for all of the users we have in the database.
+
+First, take care of your imports:
+
 	from __future__ import absolute_import
 	
 	# Python imports
@@ -1066,23 +1070,34 @@ Now, it's time to [go back to the guide](#djangopt3)
 	# Celery imports
 	from celery.task.schedules import crontab
 	from celery.decorators import periodic_task
-	
+
+Then, define the function of the task you want to execute and mark it as a periodic task. This has the task run every 10 minutes. Consult [this](http://docs.celeryproject.org/en/latest/getting-started/next-steps.html) to learn about how crontab expressions work.
+
 	@periodic_task(run_every=crontab(minute="*/10"))
-	#@periodic_task(run_every=timedelta(seconds=3))
 	def sync_database():
-	    base_url = 'http://graph.facebook.com/%s'
-	    all_facebook_users = FacebookUser.objects.all()
-	    all_columns = FacebookUser._meta.fields
-	    for facebook_user in all_facebook_users:
-	        try:
-	            response = urllib2.urlopen(base_url % facebook_user.username)
-	            json_response = json.loads(response.read())
-	            for column in all_columns:
-	                if column.name in json_response:
-	                    setattr(facebook_user, column.name, json_response[column.name])
-	            facebook_user.save()
-	        except urllib2.HTTPError:
-	            continue
-	    return True
+
+Finally, make your function do stuff. In your own applications, you can just replace the body with whatever script you want to run periodically. In our case, we're going to use this block of code, all of which you've seen before in previous examples:
+
+	base_url = 'http://graph.facebook.com/%s'
+	all_facebook_users = FacebookUser.objects.all()
+	all_columns = FacebookUser._meta.fields
+	for facebook_user in all_facebook_users:
+	    try:
+	        response = urllib2.urlopen(base_url % facebook_user.username)
+	        json_response = json.loads(response.read())
+	        for column in all_columns:
+	            if column.name in json_response:
+	                setattr(facebook_user, column.name, json_response[column.name])
+	        facebook_user.save()
+	    except urllib2.HTTPError:
+	        continue
+	return True
+
+This just gets all of the objects in our database, and then for each object, hits the Facebook Graph page corresponding to that user and updates all of the information. And now you're done! Integrating periodic tasks into a Django application is really that simple.
+
+If you want more flexibility with tasks, you're going to want to read the following:
+
+* [Celery tasks guide](http://docs.celeryproject.org/en/latest/getting-started/next-steps.html)
+* [Scheduling periodic tasks](http://ask.github.com/celery/getting-started/periodic-tasks.html)
 
 Now, it's time to [go back to the guide](#djangopt5)
