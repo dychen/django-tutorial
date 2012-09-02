@@ -248,7 +248,7 @@ Now, you can run stuff locally. In four separate terminal windows, run these thr
 This doesn't do anything yet, but you'll be using these commands in the near future.
 
 
-<a name="django>Write an Application with Django</a>
+<a name="django">Write an Application with Django</a>
 --------------------------------------------------
 In this section, I will give you a brief overview of creating a full-functioning Django application. Django is a lightweight web framework (sort of like Rails, but much lighter) that makes it easy to develop web applications. It's not at all meant to be a full guide. Rather, it's a brief introduction so that you can quickly get something running. I strongly encourage you to check out the [Django tutorial](http://www.djangobook.com/en/1.0/), which is extremely comprehensive and very straightforward and easy to understand.
 
@@ -793,6 +793,23 @@ Exit the database:
 -------------------------------
 <a name="models.py">**models.py**</a>
 
+	from django.db import models
+
+	class FacebookUser(models.Model):
+	    id = models.BigIntegerField(primary_key=True)
+	    name = models.CharField(max_length=100)
+	    username = models.CharField(max_length=50)
+	    description = models.TextField(null=True)
+	    about = models.TextField(null=True)
+	    is_published = models.NullBooleanField(null=True)
+	    website = models.CharField(max_length=100, null=True)
+	    link = models.CharField(max_length=100, null=True)
+	    number = models.PositiveIntegerField(null=True)
+	    talking_about_count = models.IntegerField(null=True)
+	    likes = models.IntegerField(null=True)
+	
+	    def __unicode__(self):
+	        return self.name
 
 <a name="views.py">**views.py**</a>
 
