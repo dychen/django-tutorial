@@ -98,9 +98,15 @@ Create a virtual Python environment for your project. This makes a venv director
 
 	$ virtualenv venv --distribute
 
-Modify your $PATH environment variable to use the new Python environment instead of your machine's:
+Modify your $PATH environment variable to use the new Python environment instead of your machine's. This "activates" the virtual environment:
 
 	$ source venv/bin/activate
+
+To "deactivate" the virtual environment do the following (or just close the window or log out):
+
+	$ deactivate
+
+IMPORTANT: Every time you want to work on your project, when you go into the project directory, you have to load up the virtual environment (it doesn't do this for you automatically, unlike with Rails).
 
 Install Django, psycopg2 (Django's Postgres adapter), and dj-database-url (makes it easier to configure the database with Heroku)
 
@@ -518,7 +524,7 @@ Congratulations, you're done! You've just created a full-functioning production-
 * [A quick introduction to git](#gittutorial)
 * [A small Postgres reference](#postgrescommands)
 * [Code used in the guide](#code)
-	* [models.py][models.py]
+	* [models.py](#models.py)
 	* [views.py](#views.py)
 	* [add_user_form.html](#add_user_form.html)
 	* [tasks.py](#tasks.py)
@@ -533,6 +539,8 @@ Suppose you want to continue working on your project from a different computer. 
 	$ export PATH=/usr/local/share/python:$PATH
 	$ easy_install pip
 	$ pip install virtualenv
+	$ virtualenv venv --distribute
+	$ source venv/bin/activate
 	$ git clone git@github.com:Adaptly/django-tutorial.git
 	$ cd django-tutorial
 	$ sudo pip install -r requirements.txt
@@ -543,8 +551,17 @@ Suppose you want to continue working on your project from a different computer. 
 
 <a id="updatingbashrc">Updating .bashrc</a>
 -------------------------------------------
-In progress...
+If you want to be able to run commands such as rabbitmqctl from anywhere, you have to add its source directory to the $PATH environment variable. However, this variable isn't shared across different terminal sessions, so it gets reset every time you log in and out or open a new terminal window. To fix this, you need to modify your user's .bashrc, which is located in your home directory (~) and gets loaded up every time a new shell window opens. When you're modifying this, you have to know the path to the source directory of the commands you want to be able to run from anywhere. For rabbitmqctl and rabbitmq-server, those commands are located in /usr/local/sbin. To add this to your bashrc, in ~/.bashrc, add the following line:
 
+	PATH=$PATH:/usr/local/sbin
+
+Or, you can do the following:
+
+	echo 'PATH=$PATH:/usr/local/sbin' >> ~/.bashrc
+
+Now, you have to reload the shell for the changes to take place. The following command just reloads ~/.bashrc, which is just as good:
+
+	exec bash
 
 <a id="gittutorial">Git Tutorial</a>
 ------------------------------------
