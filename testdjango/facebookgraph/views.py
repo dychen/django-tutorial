@@ -13,7 +13,6 @@ def add_user(request):
         q = request.GET['q_user']
         if not q:
             errors.append('Enter a search term.')
-        if len(errors) != 0:
             return render_to_response('add_user_form.html', {'errors': errors})
         else:
             facebook_data = retrieve_facebook_user_data(q)

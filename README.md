@@ -272,27 +272,27 @@ Take a look at your application directory:
 * **views.py:** This defines all of the views your applications will use. Views are Django's way of dynamically handling user requests. Each route defined in urls.py will be linked to a specific function in views.py that handles the request to that route.
 
 Here's an outline of what we're going to do:
-* Make a FacebookUser model that mirrors the responses that we get from the Facebook Graph
-* Make a view that lets the user search for a Facebook user and add that user to the database
-* Make a template to render that view
-* Make a views that show all users in our database and the information for a specific user (like API routes)
-* Make a task that keeps our database up-to-date by periodically calling the Facebook Graph API
+* [Make a FacebookUser model that mirrors the responses that we get from the Facebook Graph](#djangopt1)
+* [Make a view that lets the user search for a Facebook user and add that user to the database](#djangopt2)
+* [Make a template to render that view](#djangopt3)
+* [Make a views that show all users in our database and the information for a specific user (like API routes)](#djangopt4)
+* [Make a task that keeps our database up-to-date by periodically calling the Facebook Graph API](#djangopt5)
 
-**Making a FacebookUser Model**
+<a name="djangopt1">**Making a FacebookUser Model**</a>
 
 1. Copy the code in django-tutorial/testdjango/facebookgraph/models.py into your own models.py. The code itself along with a brief explanation that you should definitely look at is in the [appendix](#models.py).
 2. Sync the model with the database (NOTE: The first time you run syncdb, it's going to ask you to create a superuser. This isn't necessary, but you can do it if you want to use the [Admin interface](https://docs.djangoproject.com/en/dev/ref/contrib/admin/), which is a nice GUI that you can use to manage your site. I won't cover it here).
 
 		python manage.py syncdb
 
-**Making an Add User View**
+<a name="djangopt2">**Making an Add User View**</a>
 
 1. Copy the add_user function and the two helper functions (retrieve_facebook_user_data and add_user_to_db) in django-tutorial/testdjango/facebookgraph/views.py. The code itself along with a brief explanation that you should definitely look at is in the [appendix](#views.py).
-2. Add the following to the urlpatterns tuple in testdjango/urls.py. This says that if someone hits the url your_base_url/add_user, it will handle the response using the add_user function in views.py:
+2. Add the following to the urlpatterns tuple in testdjango/urls.py. This says that if someone hits the url your_base_url/add_user, it will handle the response using the add_user function in views.py. The r means raw string (the string will be treated literally), so you don't have to escape special characters. The '^' means match all characters before the string (which, in this case, is nothing - just the root directory '/' which is automatically prepended) and the '$' means stop matching any characters after the string. For example, if you didn't include the $, then the url below would match routes like base_url/add_user/bob and base_url/add_user/1234 as well. [This](http://www.djangobook.com/en/1.0/chapter03/) is a good resource to learn more about urls.py:
 
 		url(r'^add_user/$', add_user),
 
-**Making an Add User Template**
+<a name="djangopt3">**Making an Add User Template**</a>
 
 1. Make a templates directory in your project directory (testdjango):
 
@@ -320,7 +320,7 @@ Here's an outline of what we're going to do:
 
 6. Hit the route to see it in action. In a web browser, go to the address localhost:8000/add_user. Try adding the users 'Coca-Cola' and 'Pepsi.'
 
-**Making API Routes**
+<a name="djangopt4">**Making API Routes**</a>
 
 1. Copy the show_all_users function in django-tutorial/testdjango/facebookgraph/views.py. The code itself along with a brief explanation that you should definitely look at is in the [appendix](#views.py).
 2. Add the following to the urlpatterns tuple in testdjango/urls.py. This says that if someone hits the url your_base_url/all_users, it will handle the response using the show_all_users function in views.py:
@@ -335,7 +335,7 @@ Here's an outline of what we're going to do:
 
 6. Hit the route to see it in action. In a web browser, go to the address localhost:8000/users/coca-cola.
 
-**Making an Update User Background Task**
+<a name="djangopt5">**Making an Update User Background Task**</a>
 
 1. Copy the code in django-tutorial/testdjango/facebookgraph/tasks.py. The code along with a brief explanation that you should definitely look at is in the [appendix](#tasks.py).
 2. Comment out the run every 10 minutes line and uncomment the run every 3 seconds line:
@@ -517,7 +517,7 @@ Congratulations, you're done! You've just created a full-functioning production-
 
 
 <a name="appendix">Appendix</a>
-=============================
+-----------------------------
 
 * [How to continue working on your project on a different computer](#setup)
 * [How to update your .bashrc to run commands when you get the -bash: command not found error](#updatingbashrc)
@@ -793,29 +793,302 @@ Exit the database:
 -------------------------------
 <a name="models.py">**models.py**</a>
 
+The models.py file is what you use to create all your Django models, which in turn creates any database tables that aren't already in the database whenever you do a syncdb.
+
+First, make sure to import models from django.db module:
+
 	from django.db import models
 
+Then, we'll make a FacebookUser class:
+
 	class FacebookUser(models.Model):
-	    id = models.BigIntegerField(primary_key=True)
-	    name = models.CharField(max_length=100)
-	    username = models.CharField(max_length=50)
-	    description = models.TextField(null=True)
-	    about = models.TextField(null=True)
-	    is_published = models.NullBooleanField(null=True)
-	    website = models.CharField(max_length=100, null=True)
-	    link = models.CharField(max_length=100, null=True)
-	    number = models.PositiveIntegerField(null=True)
-	    talking_about_count = models.IntegerField(null=True)
-	    likes = models.IntegerField(null=True)
-	
-	    def __unicode__(self):
-	        return self.name
+
+Finally, add whatever fields you want the FacebookUser model to have to the class. (Remember, indentation is important in Python). The syntax is:
+
+	{column_name} = models.{FieldType}({field_parameters})
+
+For example, we want the id column to be the primary key of the field, and we want it to be a long and not null:
+
+	id = models.BigIntegerField(primary_key=True)
+
+Next, we want the name and the username columns to be strings which also shouldn't be null:
+
+	name = models.CharField(max_length=100)
+	username = models.CharField(max_length=50)
+
+Let's add a description column, which should be of type text, but can be null:
+
+	description = models.TextField(null=True)
+
+Here's the rest of the columns I added:
+
+	about = models.TextField(null=True)
+	is_published = models.NullBooleanField(null=True)
+	website = models.CharField(max_length=100, null=True)
+	link = models.CharField(max_length=100, null=True)
+	number = models.PositiveIntegerField(null=True)
+	talking_about_count = models.IntegerField(null=True)
+	likes = models.IntegerField(null=True)
+
+At the bottom, we can modify the FacebookUser's __unicode__ method so that it returns something useful (like the user's name) instead of just <Object: FacebookUser> when you're looking at an instance of the object:
+
+	def __unicode__(self):
+		return self.name
+
+That's it! Feel free to look at the full code in the Github repository.
+
+IMPORTANT: Django doesn't do database migrations, so if you want to change a table, change its model in the models.py file, delete the table from the database (see [postgres commands](#postgrescommands)), and run another syncdb.
+
+Here's a list of reference materials for more information:
+
+* [A more comprehensive guide to models](http://www.djangobook.com/en/1.0/chapter05/)
+* [The model documentation](https://docs.djangoproject.com/en/dev/topics/db/models/)
+* [The field types documentation](https://docs.djangoproject.com/en/dev/ref/models/fields/)
+
+Now, it's time to [go back to the guide](#djangopt1)
 
 <a name="views.py">**views.py**</a>
 
+The views.py file receives an HTTP request whenever a user hits a URL defined in urls.py that is mapped to a particular view.
+
+First, let's take care of our imports.
+
+	# Python imports
+	import urllib2
+	import json
+	
+	# Django imports
+	from django.http import HttpResponse
+	from django.shortcuts import render_to_response
+	from testdjango.facebookgraph.models import FacebookUser
+
+If you're looking for the code for add_user, go [here](#add_user)
+If you're looking for the code for show_all_users, go [here](#show_all_users)
+If you're looking for the code for show_user_info, go [here](#show_user_info)
+
+<a name="add_user">add_user()</a>
+
+Whenever a client hits the /add_user/ route, we get sent an HTTP request that is handled by the add_user function. The view will interact dynamically with an HTML template, which you will create next. Here's how it will work:
+
+* When the client hits the /add_user/ route, the template will render an input box and an "Add User" button.
+* The client can enter any string into the input box. When the client presses the "Add User" button, that will send a GET request with the query passed as a parameter to the same URL, which is handled again by add_user.
+	* If there was anything wrong with the search query (e.g. there wasn't a search term), the view will render the same page, but with the errors displayed
+	* If there was something wrong with the search itself (e.g. the user couldn't be found), the view will again render the same page, but with the errors displayed
+	* If the query was successful, the view will again render the same page, but with a success message.
+
+This is a little complicated to tackle at once, so let's break it down into smaller steps. Feel free to look at the full code on Github as you read this.
+
+1. Create the add_user function. Remember, for any view function that's mapped to a URL, you'll be receiving an HTTP request as a parameter.
+
+	def add_user(request):
+
+2. Inside that function, let's make a list to contain all of the error strings we want to print out in case the client sucks at inputting usernames.
+
+	errors = []
+
+3. Now, we want to handle the GET request. If the client clicked the "Add User" button, the parameter "q_user" will be in the GET request. The name "q_user" is defined in the template (we'll get to that later). For now, just know it's going to be passed in the response if the button is clicked and not if the button isn't.
+
+	if 'q_user' in request.GET:
+	    # ...stuff
+	else:
+	    # ...stuff
+
+4. Let's tackle the easier part of the if/else statement first (the stuff in the else block). If the button isn't clicked, then we just want to render our template normally. So, we call the render_to_response function located in the django.shortcuts library.
+
+	return render_to_response('add_user_form.html')
+
+5. Now, for the hard(er) part (the stuff in the if block). Let's call q the actual search input we got. Then, if q is empty, we want to add an error message to the errors list. We can add more error checking if we want (like checking to make sure q has at least one letter in it), but I think this is good enough. Now that we have our errors, we can call the render_to_response function, this time passing a second parameter, which is a dictionary (mapping) of variable names and their values that the template will take care of.
+
+	q = request.GET['q_user']
+	if not q:
+	    errors.append('Enter a search term.')
+	    return render_to_response('add_user_form.html', {'errors': errors})
+	else:
+	    # ...stuff
+
+6. Now, we can fill out that else block. If the query's not empty, then we want to try pulling that user's data from Facebook. The retrieve_facebook_user_data helper function takes a query string (like "coca-cola") and returns the parsed JSON response (which should be a dictionary of column names to column values) if successful and an error string otherwise.
+
+	facebook_data = retrieve_facebook_user_data(q)
+
+7. Now, it's time to handle more errors! If we got back an error string, we want to render the same page, but with a different error message. This time, we'll give the mapping in the extra parameter the name "httperror" mapped to the Error string that the function returned.
+
+	if type(facebook_data) is str and 'Error:' in facebook_data:
+	    return render_to_response('add_user_form.html', {'httperror': facebook_data})
+
+8. Otherwise, if we got a nicely parsed JSON response, it'll be a dictionary, so we can call the add_user_to_db helper function that I wrote to add the user to the database. Then, we'll render the same page, but this time with a success message. (Note that add_user_to_db may not be able to successfully parse the input. In this case, we'd want to add some more error handling, but I'll let you do that on your own if you really want to).
+
+	elif type(facebook_data) is dict:
+	    return render_to_response('add_user_form.html', {'success': True})
+
+9. Finally, if neither the if or the elif got executed, something weird happened, so just render the normal add_user_form template. (If we were more rigorous, we'd want to handle this error, but we're not!)
+
+	else:
+	    return render_to_response('add_user_form.html')
+
+10. Add in the two helper functions that I wrote (retrieve_facebook_user_data and add_user_to_form).
+
+That's it! You've written all of the back-end code required to add users to your database. To learn about actually interacting with the database at the view level, read [this](http://www.djangobook.com/en/1.0/chapter05/) (starting at the section titled Inserting and Updating Data). [This](https://docs.djangoproject.com/en/dev/topics/db/queries/) offers more detail of how models interact with the database. We'll also be talking about it later when we write our API views to expose the data in our database.
+
+Now, it's time to [go back to the guide](#djangopt2)
+
+<a name="show_all_users">show_all_users()</a>
+
+<a name="show_user_info">show_user_info()</a>
+
+Now, it's time to [go back to the guide](#djangopt4)
+
+	# Python imports
+	import urllib2
+	import json
+	
+	# Django imports
+	from django.http import HttpResponse
+	from django.shortcuts import render_to_response
+	from testdjango.facebookgraph.models import FacebookUser
+	
+	def add_user(request):
+	    errors = []
+	    if 'q_user' in request.GET:
+	        q = request.GET['q_user']
+	        if not q:
+	            errors.append('Enter a search term.')
+	        if len(errors) != 0:
+	            return render_to_response('add_user_form.html', {'errors': errors})
+	        else:
+	            facebook_data = retrieve_facebook_user_data(q)
+	            if type(facebook_data) is str and 'Error:' in facebook_data:
+	                return render_to_response('add_user_form.html', {'httperror': facebook_data})
+	            elif type(facebook_data) is dict:
+	                add_user_to_db(facebook_data)
+	                return render_to_response('add_user_form.html', {'success': True})
+	            else:
+	                return render_to_response('add_user_form.html')
+	    else:
+	        return render_to_response('add_user_form.html')
+	
+	def show_all_users(request):
+	    html = "<html><body><b>ID::Name::Username</b><br>"
+	    users = FacebookUser.objects.all()
+	    for user in users:
+	        html += "<li>%d::%s::%s<br>" % (user.id, user.name, user.username)
+	    html += "</body></html>"
+	    return HttpResponse(html)
+	
+	def show_user_info(request, input_name):
+	    all_usernames = map(lambda x: x['username'].lower(), FacebookUser.objects.all().values('username'))
+	    if input_name.lower() in all_usernames:
+	        facebook_user = FacebookUser.objects.get(username__iregex=r"(%s)" % input_name)
+	        html = "<html><body>"
+	        for column in FacebookUser._meta.fields:
+	            html += "%s: %s<br>" % (column.name, getattr(facebook_user, column.name))
+	        html += "</body></html>"
+	    else:
+	        html = "<html><h1>User not found!</h1></html>"
+	    return HttpResponse(html)
+	
+	# Helper functions
+	
+	def retrieve_facebook_user_data(input_name):
+	    base_url = 'http://graph.facebook.com/%s'
+	    try:
+	        response = urllib2.urlopen(base_url % input_name)
+	        return json.loads(response.read())
+	    except urllib2.HTTPError, e:
+	        return "Error: Either could not connect to Facebook or user was not found."
+	    except ValueError, e:
+	        return "Error: JSON could not be decoded. Maybe you were redirected to another page."
+	
+	def add_user_to_db(facebook_data):
+	    all_columns = FacebookUser._meta.fields
+	    facebook_user = FacebookUser()
+	    for column in all_columns:
+	        if column.name in facebook_data:
+	            setattr(facebook_user, column.name, facebook_data[column.name])
+	    facebook_user.save()
 
 <a name="add_user_form.html">**add_user_form.html**</a>
 
+Templates are HTML pages that get rendered whenever a function in view.py calls render_to_response on that template. The template receives any extra variables inside the optional second parameter, a dictionary, passed when render_to_response is called. Feel free to look at the full code on Github as you read this.
+
+Let's look at the template in a little more detail. This is pretty typical HTML structure:
+
+	<!DOCTYPE html>
+	<html>
+	<head>
+	    <title>Add User</title>
+	</head>
+	<body>
+	    <!--...stuff-->
+	</body>
+
+Then, things get tricky. Control flow tools can be used in templates with {% control flow tool %} (code to execute) {% end control flow tool %}. Inside {% %}, variables are handled normally. Elsewhere in the code, you can access a variable with {{ variable_name }}.
+
+	{% if success %}
+	    <p><b>User successfully added! Add another</b></p>
+	{% endif %}
+
+This says that if the success variable is passed in the extra second parameter and if it's true, then the page is going to display an extra message.
+
+	{% if httperror %}
+	    <p style="color: red;"><b>{{ httperror }}</b></p>
+	{% endif %}
+
+Since the value of httperror will be some string, this just checks if the string is not empty, and if it isn't, it'll display the string.
+
+	{% if errors %}
+	    <ul>
+	        <p style="color: red;"><b>Something was wrong with your input:</b></p>
+	        {% for error in errors %}
+	        <p style="color: red;">{{ error }}</p>
+	        {% endfor %}
+	    </ul>
+	{% endif %}
+
+Similarly, since the value of errors will be some list of strings, this just checks if the list is not empty, and if it isn't, it displays every string in the list.
+
+Finally, the most important part: the search form. This is just normal HTML. Here, a form is always created when the page is rendered. It has a text field that's passed as the parameter "q_user" and a submit button that's passed as the parameter "add_user."
+
+	<form action="" method="get">
+	    <input type="text" name="q_user">
+	    <input type="submit" name="add_user" value="Add">
+	</form>
+
+That's it! You've successfully written your first template. To read more about control flow tools and how templates work with Django, you should start [here](http://www.djangobook.com/en/1.0/chapter04/).
+
+Now, it's time to [go back to the guide](#djangopt3)
 
 <a name="tasks.py">**tasks.py**</a>
 
+	from __future__ import absolute_import
+	
+	# Python imports
+	import urllib2
+	import json
+	from datetime import timedelta
+	
+	# Django imports
+	from testdjango.facebookgraph.models import FacebookUser
+	
+	# Celery imports
+	from celery.task.schedules import crontab
+	from celery.decorators import periodic_task
+	
+	@periodic_task(run_every=crontab(minute="*/10"))
+	#@periodic_task(run_every=timedelta(seconds=3))
+	def sync_database():
+	    base_url = 'http://graph.facebook.com/%s'
+	    all_facebook_users = FacebookUser.objects.all()
+	    all_columns = FacebookUser._meta.fields
+	    for facebook_user in all_facebook_users:
+	        try:
+	            response = urllib2.urlopen(base_url % facebook_user.username)
+	            json_response = json.loads(response.read())
+	            for column in all_columns:
+	                if column.name in json_response:
+	                    setattr(facebook_user, column.name, json_response[column.name])
+	            facebook_user.save()
+	        except urllib2.HTTPError:
+	            continue
+	    return True
+
+Now, it's time to [go back to the guide](#djangopt5)

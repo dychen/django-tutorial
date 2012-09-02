@@ -8,7 +8,7 @@ from datetime import timedelta
 # Django imports
 from testdjango.facebookgraph.models import FacebookUser
 
-# RabbitMQ imports
+# Celery imports
 from celery.task.schedules import crontab
 from celery.decorators import periodic_task
 
