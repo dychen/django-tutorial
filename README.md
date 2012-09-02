@@ -322,13 +322,13 @@ Here's an outline of what we're going to do:
 
 <a name="djangopt4">**Making API Routes**</a>
 
-1. Copy the show_all_users function in django-tutorial/testdjango/facebookgraph/views.py. The code itself along with a brief explanation that you should definitely look at is in the [appendix](#views.py).
+1. Copy the show_all_users function in django-tutorial/testdjango/facebookgraph/views.py. The code itself along with a brief explanation that you should definitely look at is in the [appendix](#show_all_users).
 2. Add the following to the urlpatterns tuple in testdjango/urls.py. This says that if someone hits the url your_base_url/all_users, it will handle the response using the show_all_users function in views.py:
 
 		url(r'^all_users/$', show_all_users),
 
 3. Hit the route to see it in action. In a web browser, go to the address localhost:8000/all_users
-4. Copy the show_user_info function in django-tutorial/testdjango/facebookgraph/views.py. The code itself along with a brief explanation that you should definitely look at is in the [appendix](#views.py).
+4. Copy the show_user_info function in django-tutorial/testdjango/facebookgraph/views.py. The code itself along with a brief explanation that you should definitely look at is in the [appendix](#show_user_info).
 5. Add the following to the urlpatterns tuple in testdjango/urls.py. This says that if someone hits the url your_base_url/users/{username}, it will handle the response using the show_user_info function in views.py. The regex means accept all input strings of one or more characters that don't include a '/'. The regex is automatically passed as the second parameter to the function show_user_info:
 
 		url(r'^users/([^/]+)/$', show_user_info),
@@ -862,9 +862,12 @@ First, let's take care of our imports.
 	from django.shortcuts import render_to_response
 	from testdjango.facebookgraph.models import FacebookUser
 
-*If you're looking for the code for add_user, go [here](#add_user)
-*If you're looking for the code for show_all_users, go [here](#show_all_users)
-*If you're looking for the code for show_user_info, go [here](#show_user_info)
+
+If you're looking for the code for add_user, go [here](#add_user)
+
+If you're looking for the code for show_all_users, go [here](#show_all_users)
+
+If you're looking for the code for show_user_info, go [here](#show_user_info)
 
 <a name="add_user">add_user()</a>
 
@@ -933,78 +936,69 @@ Now, it's time to [go back to the guide](#djangopt2)
 
 <a name="show_all_users">show_all_users()</a>
 
-<a name="show_user_info">show_user_info()</a>
+Whenever a client hits the /show_all_users/ route, we don't really need to handle the HTTP request. We just want to get all of the users from the database and show them to the client. Since this is pretty simple, we don't even need a template. We can just return an HttpResponse object using the django.http library, which automatically renders the HTML you pass it.
+
+	def show_all_users(request):
+	    html = "<html><body><b>ID::Name::Username</b><br>"
+
+Let's start with an HTML string. We'll keep adding results to this for however many results are in the database.
+
+	users = FacebookUser.objects.all()
+
+This just retrieves all of the objects the FacebookUser model has. Now that we have a list of all of the FacebookUser objects, we can start adding them to our HTML string. To access a field for any object, just do object.field_name. You can also set these fields, but they won't be updated in the database until you do object.save().
+
+	for user in users:
+	    html += "<li>%d::%s::%s<br>" % (user.id, user.name, user.username)
+
+Now, finish off the string by closing the unclosed tags and return the HttpResponse, which will render the HTML for us.
+
+	html += "</body></html>"
+	    return HttpResponse(html)
 
 Now, it's time to [go back to the guide](#djangopt4)
 
-	# Python imports
-	import urllib2
-	import json
-	
-	# Django imports
-	from django.http import HttpResponse
-	from django.shortcuts import render_to_response
-	from testdjango.facebookgraph.models import FacebookUser
-	
-	def add_user(request):
-	    errors = []
-	    if 'q_user' in request.GET:
-	        q = request.GET['q_user']
-	        if not q:
-	            errors.append('Enter a search term.')
-	        if len(errors) != 0:
-	            return render_to_response('add_user_form.html', {'errors': errors})
-	        else:
-	            facebook_data = retrieve_facebook_user_data(q)
-	            if type(facebook_data) is str and 'Error:' in facebook_data:
-	                return render_to_response('add_user_form.html', {'httperror': facebook_data})
-	            elif type(facebook_data) is dict:
-	                add_user_to_db(facebook_data)
-	                return render_to_response('add_user_form.html', {'success': True})
-	            else:
-	                return render_to_response('add_user_form.html')
-	    else:
-	        return render_to_response('add_user_form.html')
-	
-	def show_all_users(request):
-	    html = "<html><body><b>ID::Name::Username</b><br>"
-	    users = FacebookUser.objects.all()
-	    for user in users:
-	        html += "<li>%d::%s::%s<br>" % (user.id, user.name, user.username)
-	    html += "</body></html>"
-	    return HttpResponse(html)
-	
+<a name="show_user_info">show_user_info()</a>
+
+Let's try something a little more complicated. This time, whenever a client hits the /users/{username} route, he'll be passing an extra parameter that our view will need to handle. Otherwise, the code will be pretty similar to before:
+
 	def show_user_info(request, input_name):
-	    all_usernames = map(lambda x: x['username'].lower(), FacebookUser.objects.all().values('username'))
-	    if input_name.lower() in all_usernames:
-	        facebook_user = FacebookUser.objects.get(username__iregex=r"(%s)" % input_name)
-	        html = "<html><body>"
-	        for column in FacebookUser._meta.fields:
-	            html += "%s: %s<br>" % (column.name, getattr(facebook_user, column.name))
-	        html += "</body></html>"
-	    else:
-	        html = "<html><h1>User not found!</h1></html>"
-	    return HttpResponse(html)
-	
-	# Helper functions
-	
-	def retrieve_facebook_user_data(input_name):
-	    base_url = 'http://graph.facebook.com/%s'
-	    try:
-	        response = urllib2.urlopen(base_url % input_name)
-	        return json.loads(response.read())
-	    except urllib2.HTTPError, e:
-	        return "Error: Either could not connect to Facebook or user was not found."
-	    except ValueError, e:
-	        return "Error: JSON could not be decoded. Maybe you were redirected to another page."
-	
-	def add_user_to_db(facebook_data):
-	    all_columns = FacebookUser._meta.fields
-	    facebook_user = FacebookUser()
-	    for column in all_columns:
-	        if column.name in facebook_data:
-	            setattr(facebook_user, column.name, facebook_data[column.name])
-	    facebook_user.save()
+
+The next line just gets a list of all of the FacebookUser objects' usernames (in lowercase for more reliable matching):
+
+	all_usernames = map(lambda x: x['username'].lower(), FacebookUser.objects.all().values('username'))
+
+Now, we have two cases. Either, the user the client is searching for will be somewhere in the database or he won't.
+
+	if input_name.lower() in all_usernames:
+	    #...stuff
+	else:
+	    #...stuff
+
+If the user isn't in the database, we can just make some HTML that says the user isn't there:
+
+	html = "<html><h1>User not found!</h1></html>"
+
+However, if the user is actually in the database, we're going to have to build an HTML string with all of the corresponding object's fields and the values of those fields. This just gets the user from the database, doing a case-insensitive matching. You can use the get or filter methods to perform a pseudo database query (e.g. FacebookUser.objects.get(username="Bob") for case-sensitive matching). Note that get only returns a single object (and throws an error if more than one object is returned) whereas filter returns a list of objects, even if only one is returned.
+
+	facebook_user = FacebookUser.objects.get(username__iregex=r"(%s)" % input_name)
+
+Then, we build our HTML string. You can get a list of all of a model's fields with the model._meta.fields attribute, and you can use the getattr(object, field) to get the value of that object's field:
+
+	html = "<html><body>"
+	for column in FacebookUser._meta.fields:
+	    html += "%s: %s<br>" % (column.name, getattr(facebook_user, column.name))
+	html += "</html></body>"
+
+Finally, we return the HttpResponse, which will render the HTML for us.
+
+	return HttpResponse(html)
+
+Note that that was just a very short example of how to interact with models in your views. However, this is a very broad and important topic. You're going to want to reference the following if you want to use models in the future.
+ 
+* [A more comprehensive example of interacting with models](http://www.djangobook.com/en/1.0/chapter05/) (starting at the section titled Inserting and Updating Data).
+* [Documentation on interacting with models](https://docs.djangoproject.com/en/dev/topics/db/queries/)
+
+Now, it's time to [go back to the guide](#djangopt4)
 
 <a name="add_user_form.html">**add_user_form.html**</a>
 
