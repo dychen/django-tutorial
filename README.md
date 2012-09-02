@@ -88,9 +88,9 @@ Finally, set up your .gitignore file, which resides in the same level as your .g
 
 <a name="startproject">Set up the Project</a>
 -------------------------------------------
-Now, we're going to set up the Django project. You can call it whatever you want, but ideally you'll give it the same name that Will gives the Heroku app to avoid any confusion down the line. In this tutorial, we called our main project directory django-tutorial (when we made our git repo). Within the main project directory, we can start a Django project. I'm going to call the project we're going to make testdjango, but you'll probably want to give yours a more descriptive name whenever you make your own project. Then, we're going to make an application for that project. Each project can have one or more applications, but we'll just make one for our purposes. We'll call it facebookgraph because it hits Facebook's Graph API and pulls user data from that.
+Now, we're going to set up the Django project. In this tutorial, we called our root project directory django-tutorial (when we made our git repo). Within the root project directory, we can start a Django project. I'm going to call the project we're going to make testdjango, but you'll probably want to give yours a more descriptive name whenever you make your own project (or give it the same name as your main project directory). Then, we're going to make an application for that project. Each project can have one or more applications, but we'll just make one for our purposes. We'll call it facebookgraph because it hits Facebook's Graph API and pulls user data from that.
 
-Go to your main project directory:
+Go to your root project directory:
 
 	$ cd ~/django-tutorial
 
@@ -98,7 +98,7 @@ Create a virtual Python environment for your project. This makes a venv director
 
 	$ virtualenv venv --distribute
 
-Modify your $PATH environment variable to use the new Python environment instead of your machine's. This "activates" the virtual environment:
+This "activates" the virtual environment. Basically, it modify your $PATH environment variable to use the new Python environment instead of your machine's (among doing a few other things like changing your shell prompt):
 
 	$ source venv/bin/activate
 
@@ -106,17 +106,17 @@ To "deactivate" the virtual environment do the following (or just close the wind
 
 	$ deactivate
 
-IMPORTANT: Every time you want to work on your project, when you go into the project directory, you have to load up the virtual environment (it doesn't do this for you automatically, unlike with Rails).
+IMPORTANT: Every time you want to work on your project, when you go into the root project directory, you have to load up the virtual environment (it doesn't do this for you automatically, unlike with Rails).
 
 Install Django, psycopg2 (Django's Postgres adapter), and dj-database-url (makes it easier to configure the database with Heroku)
 
 	$ pip install Django psycopg2 dj-database-url
 
-Start your Django project in the project directory:
+Start your Django project in the root project directory (don't forget the period):
 
 	$ django-admin.py startproject testdjango .
 
-Now, you can make one or more applications for the project:
+Now, you can make an application for the project:
 
 	$ mkdir testdjango/facebookgraph
 	$ python manage.py startapp facebookgraph testdjango/facebookgraph
@@ -144,7 +144,7 @@ Test to make sure the development server works:
 
 <a name="installdependencies">Install Dependencies (Local)</a>
 ------------------------------------------------------------
-Now, we want to make sure everything we're going to need later is installed on our local machine. Make a file in your base project directory (it should live in ~/django-tutorial) called requirements.txt:
+Now, we want to make sure everything we're going to need later is installed on our local machine. Make a file in your root project directory (it should live in ~/django-tutorial) called requirements.txt:
 	
 	Django==1.4.1
 	amqplib==1.0.2
@@ -184,7 +184,7 @@ Also, there are two more things you need to install that aren't managed by pip.
 
 <a name="postgres">Set up the Database with Postgres (Local)</a>
 --------------------------------------------------------------
-We're going to use Postgres for our database. Databases are great because they're the best way to quickly store, organize, and retrieve tons of information. They're like huge spreadsheets that don't suck. Each database is composed of tables, each of which is used to store information about something (e.g. a car company may have a car table, a customers table, an employees table, and a transactions table). Each table has a schema, which is composed of the columns that make up the table (e.g. for the car table, it could have a car name column, a quantity column, and a price column) and the data types of the columns (e.g. for that same table, the car name would be a string, or VARCHAR, the quantity would be an integer, and the price would be a float or decimal), as well as things like primary and foreign keys that you don't really have to worry about yet. Each table is used to store data in the form of tuples (or records). For example, the car table could have the tuple (2007 Honda Civic, 20, 15000.00). For this tutorial, you don't need to know SQL, but it's highly recommended that you learn it. Go to the [appendix](#postgrescommands) for a list of a few quick Postgres commands.
+We're going to use Postgres for our database. Databases are great because they're the best way to quickly store, organize, and retrieve tons of information. They're like huge spreadsheets that don't suck. Each database is composed of tables, each of which is used to store information about something (e.g. a car company may have a car table, a customers table, an employees table, and a transactions table). Each table has a schema, which is composed of the columns that make up the table (e.g. for the car table, it could have a car name column, a quantity column, and a price column) and the data types of the columns (e.g. for that same table, the car name would be a string, or VARCHAR, the quantity would be an integer, and the price would be a float or decimal), as well as things like primary and foreign keys that you don't really have to worry about yet. Each table is used to store data in the form of tuples (or records). For example, the car table could have the tuple ('2007 Honda Civic', 20, 15000.00). For this tutorial, you don't need to know SQL, but it's highly recommended that you learn it. Go to the [appendix](#postgrescommands) for a list of a few quick Postgres commands.
 
 Create a local development database (your Heroku app should already come with a production database so you don't need to worry about that):
 
@@ -196,18 +196,18 @@ Make sure your application settings knows about the database. In testdjango/sett
 	...
 	DATABASES = {'default': dj_database_url.config(default='postgres://:@localhost:5432/testdjango_development')}
 
-This should replace the current DATABASES environment variable in settings.py. The structure should be:
+This should replace the current DATABASES environment variable in settings.py. For reference, the structure should be:
 
-	default='postgres://{USER}:{PASSWORD}@localhost:{PORT}/{NAME}'
+	default='postgres://{USERNAME}:{PASSWORD}@localhost:{PORT}/{NAME}'
 
 So, in our example, we're using the testdjango_development database with no user and password on port 5432.
 
 
 <a name="celery">Set up the Background Jobs with Celery and RabbitMQ (Local)</a>
 ------------------------------------------------------------------------------
-Celery is queuing and messaging service that lets you easily manage background jobs. RabbitMQ is the broker (queuing and messaging system system) that we're going to use with Celery that makes it really easy to manage the job queues and specific tasks (especially on Heroku). The processes that we'll be running are celeryd, which is the Celery worker that executes our background tasks, and celerybeat, which schedules those tasks.
+Celery is a service that lets you easily manage background jobs. RabbitMQ is the broker (queuing and messaging system) that we're going to use with Celery that makes it really simple to manage the job queues and specific tasks (especially on Heroku). The processes that we'll be running are celeryd, which is the Celery worker that executes our background tasks, and celerybeat, which schedules those tasks.
 
-You should've already installed Celery as well, so again, we need to make sure Django knows to use it. In testdjango/settings.py, add the following to the INSTALLED_APPS variable:
+You should've already installed Celery so again, we need to make sure Django knows to use it. In testdjango/settings.py, add the following to the INSTALLED_APPS variable:
 
 	'djcelery',
 
@@ -230,27 +230,35 @@ You may need to add /usr/local/sbin to your $PATH variable if you get one of the
 	-bash: rabbitmqctl: command not found
 	-bash: rabbitmq-server: command not found
 
-Solution:
+Temporary solution (for a permanent solution, see the [appendix](#updatingbashrc)):
 
 	$ export PATH=/usr/local/sbin:$PATH
 
-Add the following line to the bottom of the settings.py. This says that Celery is going to use RabbitMQ as its broker with the default settings defined above (username is guest, password is guest, vhost is '/', server is localhost, and port is 5672):
+Add the following line to the bottom of settings.py. This says that Celery is going to use RabbitMQ as its broker with the default settings defined above (username is guest, password is guest, vhost is '/', server is localhost, and port is 5672):
 
 	BROKER_URL = 'amqp://guest:guest@localhost:5672//'
 
-Now, you can run stuff locally. In four separate terminal windows, run these three commands:
+For reference, the BROKER_URL is in the format
+
+	BROKER_URL = 'amqp://{USERNAME}:{PASSWORD}@{SERVER}:{PORT}/{VHOST}'
+
+Now, you can run stuff locally. In four separate terminal windows, run these commands:
 
 	$ rabbitmq-server
 	$ python manage.py runserver
 	$ python manage.py celeryd
 	$ python manage.py celerybeat
 
-This doesn't do anything yet, but you'll be using these commands in the near future.
+This doesn't do anything yet, but you'll be making use of these processes in the near future.
+
+Sync the development database to use the Celery tables:
+
+	$ python manage.py syncdb
 
 
 <a name="django">Write an Application with Django</a>
 --------------------------------------------------
-In this section, I will give you a brief overview of creating a full-functioning Django application. Django is a lightweight web framework (sort of like Rails, but much lighter) that makes it easy to develop web applications. It's not at all meant to be a full guide. Rather, it's a brief introduction so that you can quickly get something running. I **strongly** encourage you to check out the [Django tutorial](http://www.djangobook.com/en/1.0/), which is extremely comprehensive and very straightforward and easy to understand.
+In this section, I will give you a brief overview of creating a full-functioning Django application. Django is a lightweight web framework (sort of like Rails, but much lighter) that makes it easy to develop web applications. This is not at all meant to be a full guide. Rather, it's a brief introduction to show you how easy it is to quickly get something up and running. I **strongly** encourage you to check out the [Django tutorial](http://www.djangobook.com/en/1.0/), which is extremely comprehensive and very straightforward and easy to understand.
 
 Previously, you made your Django app (called facebookgraph). Now, we're going to actually add functionality to that. Take a look at your project directory (testdjango):
 
@@ -272,11 +280,11 @@ Take a look at your application directory:
 * **views.py:** This defines all of the views your applications will use. Views are Django's way of dynamically handling user requests. Each route defined in urls.py will be linked to a specific function in views.py that handles the request to that route.
 
 Here's an outline of what we're going to do:
-* [Make a FacebookUser model that mirrors the responses that we get from the Facebook Graph](#djangopt1)
-* [Make a view that lets the user search for a Facebook user and add that user to the database](#djangopt2)
-* [Make a template to render that view](#djangopt3)
-* [Make a views that show all users in our database and the information for a specific user (like API routes)](#djangopt4)
-* [Make a task that keeps our database up-to-date by periodically calling the Facebook Graph API](#djangopt5)
+1. [Make a FacebookUser model that mirrors the responses that we get from the Facebook Graph](#djangopt1)
+2. [Make a view that lets the user search for a Facebook user and add that user to the database](#djangopt2)
+3. [Make a template to render that view](#djangopt3)
+4. [Make API routes that show all users in our database and the information for a specific user](#djangopt4)
+5. [Make a background task that keeps our database up-to-date by periodically calling the Facebook Graph API](#djangopt5)
 
 <a name="djangopt1">**Making a FacebookUser Model**</a>
 
@@ -288,9 +296,11 @@ Here's an outline of what we're going to do:
 <a name="djangopt2">**Making an Add User View**</a>
 
 1. Copy the add_user function and the two helper functions (retrieve_facebook_user_data and add_user_to_db) in django-tutorial/testdjango/facebookgraph/views.py. The code itself along with a brief explanation that you should definitely look at is in the [appendix](#views.py).
-2. Add the following to the urlpatterns tuple in testdjango/urls.py. This says that if someone hits the url your_base_url/add_user, it will handle the response using the add_user function in views.py. The r means raw string (the string will be treated literally), so you don't have to escape special characters. The '^' means match all characters before the string (which, in this case, is nothing - just the root directory '/' which is automatically prepended) and the '$' means stop matching any characters after the string. For example, if you didn't include the $, then the url below would match routes like base_url/add_user/bob and base_url/add_user/1234 as well. [This](http://www.djangobook.com/en/1.0/chapter03/) is a good resource to learn more about urls.py:
+2. Add the following to the urlpatterns tuple in testdjango/urls.py:
 
 		url(r'^add_user/$', add_user),
+
+This says that if someone hits the url http://yourbaseurl/add_user, it will handle the response using the add_user function in views.py. The r means raw string (the string will be treated literally), so you don't have to escape special characters. The '^' means match all characters before the string (which, in this case, is nothing - just the root directory '/' which is automatically prepended) and the '$' means stop matching any characters after the string. For example, if you didn't include the $, then the url below would match routes like base_url/add_user/bob and base_url/add_user/1234 as well. [This](http://www.djangobook.com/en/1.0/chapter03/) is a good resource to learn more about urls.py.
 
 <a name="djangopt3">**Making an Add User Template**</a>
 
@@ -323,15 +333,17 @@ Here's an outline of what we're going to do:
 <a name="djangopt4">**Making API Routes**</a>
 
 1. Copy the show_all_users function in django-tutorial/testdjango/facebookgraph/views.py. The code itself along with a brief explanation that you should definitely look at is in the [appendix](#show_all_users).
-2. Add the following to the urlpatterns tuple in testdjango/urls.py. This says that if someone hits the url your_base_url/all_users, it will handle the response using the show_all_users function in views.py:
+2. Add the following to the urlpatterns tuple in testdjango/urls.py:
 
 		url(r'^all_users/$', show_all_users),
+This says that if someone hits the url http://yourbaseurl/all_users, it will handle the response using the show_all_users function in views.py.
 
 3. Hit the route to see it in action. In a web browser, go to the address localhost:8000/all_users
 4. Copy the show_user_info function in django-tutorial/testdjango/facebookgraph/views.py. The code itself along with a brief explanation that you should definitely look at is in the [appendix](#show_user_info).
-5. Add the following to the urlpatterns tuple in testdjango/urls.py. This says that if someone hits the url your_base_url/users/{username}, it will handle the response using the show_user_info function in views.py. The regex means accept all input strings of one or more characters that don't include a '/'. The regex is automatically passed as the second parameter to the function show_user_info:
+5. Add the following to the urlpatterns tuple in testdjango/urls.py:
 
 		url(r'^users/([^/]+)/$', show_user_info),
+This says that if someone hits the url http://yourbaseurl/users/{username}, it will handle the response using the show_user_info function in views.py. The regex means accept all input strings of one or more characters that don't include a '/'. The regex is automatically passed as the second parameter to the function show_user_info. Again, [this](http://www.djangobook.com/en/1.0/chapter03/) is a good resource to learn more about regex in urls.py.
 
 6. Hit the route to see it in action. In a web browser, go to the address localhost:8000/users/coca-cola.
 
@@ -351,7 +363,7 @@ Here's an outline of what we're going to do:
 		$ python manage.py celerybeat
 
 4. Now you should be able to see realtime updates to your database information. In a web browser, go to the address localhost:8000/users/coca-cola and keep refreshing the page.
-5. Shut down your worker processes and re-comment the task settings (you don't want to hit your rate limits)
+5. Shut down your worker processes and re-comment the task settings (you don't want to hit your rate limits):
 
 		@periodic_task(run_every=crontab(minute="*/10"))
 		#@periodic_task(run_every=timedelta(seconds=3))
@@ -379,7 +391,7 @@ There are two important files that should be in your project directory that Hero
 * **Procfile**: Heroku uses this to alias certain commands to processes. You will be using the processes you define in this file to use Heroku workers to run whatever commands you alias.
 * **requirements.txt**: Heroku uses this to determine what libraries and dependencies need to be installed. Every time you push to Heroku, it will look at requirements.txt and install all the listed dependencies. For example, so far, we're using Django, psycopg2, and dj-database-url on our local machine, so we need to make Heroku install those as well.
 
-Create an empty file in your project base directory called Procfile.
+Create an empty file in your projectroot directory called Procfile.
 
 Make sure your requirements.txt looks like this:
 
@@ -459,11 +471,11 @@ To get Celery running on Heroku with RabbitMQ, first, find out what the BROKER_U
 	=== django-tutorial Config Vars
 	CLOUDAMQP_URL:              amqp://appNUMBERS_heroku.com:STUFF@NAME.cloudamqp.com/appNUMBERS_heroku.com
 
-Make a file in your testdjango directory called production_settings.py:
+Make a file in your project directory called production_settings.py (this should reside in the same level as your settings.py file):
 
 	DEBUG = False
 	TEMPLATE_DEBUG = False
-	BROKER_URL = '{Get this from CLOUDAMQP_URL}'
+	BROKER_URL = 'amqp://appNUMBERS_heroku.com:STUFF@NAME.cloudamqp.com/appNUMBERS_heroku.com'
 
 Then, add the following lines to the VERY bottom of testdjango/settings.py (you want to make sure the import overwrites all variables defined in the file):
 
@@ -477,11 +489,7 @@ Add the following lines to your Procfile:
 	celeryd: python manage.py celeryd -E -B --loglevel=INFO
 	celerybeat: python manage.py celerybeat
 
-These alias the Django commands to run the celery worker and the celerybeat scheduling service to the continuous processes "celery" and "celerybeat," respectively.
-
-Sync the development database to use the Celery tables:
-
-	$ python manage.py syncdb
+These alias the Django commands to run the celery worker and the celerybeat scheduling service to the continuous processes "celeryd" and "celerybeat," respectively.
 
 Commit and push to heroku:
 
@@ -498,14 +506,14 @@ Try scaling up the workers. Initially, you'll have 0 workers running for your ne
 
 	$ heroku ps:scale celeryd=1 --app django-tutorial
 	$ heroku ps:scale celerybeat=1 --app django-tutorial
-	$ heroku ps
+	$ heroku ps --app django-tutorial
 
 Remember, you can check how your workers are doing in real-time:
 
 	$ heroku logs --tail --ps celeryd --app django-tutorial
 	$ heroku logs --tail --ps celerybeat --app django-tutorial
 
-You can also go to [https://dashboard.heroku.com/apps/django-tutorial/](https://dashboard.heroku.com/apps/django-tutorial/) (or replace django-tutorial with whatever your app name is) to get a nice GUI for administrative stuff.
+You can also go to [https://dashboard.heroku.com/apps/django-tutorial/](https://dashboard.heroku.com/apps/django-tutorial/) (replace django-tutorial with whatever your app name is) to get a nice GUI for administrative stuff.
 
 Congratulations, you're done! You've just created a full-functioning production-ready application in about an hour. Now, you should be able to open a web browser and go to your URL (in our case, it's [http://django-tutorial.herokuapp.com](http://django-tutorial.herokuapp.com)). Note that since we haven't made a root page, we'll get a 404 error if we just go to that address.
 
@@ -531,7 +539,7 @@ Congratulations, you're done! You've just created a full-functioning production-
 
 <a name="setup">Quick Setup Instructions</a>
 ------------------------------------------
-Suppose you want to continue working on your project from a different computer. Here's what you need to do to get started, assuming you've pushed your current code (that includes your requirements.txt) to git.
+Suppose you want to continue working on your project from a different computer. Here's what you need to do to get started, assuming you've pushed your current code (that includes your requirements.txt) to Github or another remote repo.
 
 	$ cd ~
 	$ ruby <(curl -fsSkL raw.github.com/mxcl/homebrew/go)
@@ -551,7 +559,9 @@ Suppose you want to continue working on your project from a different computer. 
 
 <a name="updatingbashrc">Updating .bashrc</a>
 -------------------------------------------
-If you want to be able to run commands such as rabbitmqctl from anywhere, you have to add its source directory to the $PATH environment variable. However, this variable isn't shared across different terminal sessions, so it gets reset every time you log in and out or open a new terminal window. To fix this, you need to modify your user's .bashrc, which is located in your home directory (~) and gets loaded up every time a new shell window opens. When you're modifying this, you have to know the path to the source directory of the commands you want to be able to run from anywhere. For rabbitmqctl and rabbitmq-server, those commands are located in /usr/local/sbin. To add this to your bashrc, in ~/.bashrc, add the following line:
+If you want to be able to run commands such as rabbitmqctl from anywhere, you have to add its source directory to the $PATH environment variable. However, this variable isn't shared across different terminal sessions, so it gets reset every time you log in and out or open a new terminal window. To fix this, you need to modify your user's .bashrc, which is located in your home directory (~) and gets loaded up every time a new shell window opens. When you're modifying this, you have to know the path to the source directory of the commands you want to be able to run from anywhere.
+
+For rabbitmqctl and rabbitmq-server, those commands are located in /usr/local/sbin. To add this to your bashrc, in ~/.bashrc, add the following line:
 
 	PATH=$PATH:/usr/local/sbin
 
@@ -562,6 +572,8 @@ Or, you can do the following:
 Now, you have to reload the shell for the changes to take place. The following command just reloads ~/.bashrc, which is just as good:
 
 	exec bash
+
+Ror Python, do the same thing, except the path will be /usr/local/share/python.
 
 <a name="gittutorial">Git Tutorial</a>
 ------------------------------------
@@ -793,7 +805,7 @@ Exit the database:
 -------------------------------
 <a name="models.py">**models.py**</a>
 
-The models.py file is what you use to create all your Django models, which in turn creates any database tables that aren't already in the database whenever you do a syncdb.
+The models.py file is what you use to create all your Django models, which in turn creates any database tables that aren't already in the database whenever you do a syncdb. Feel free to look at the full code on Github as you read this.
 
 First, make sure to import models from django.db module:
 
@@ -803,7 +815,7 @@ Then, we'll make a FacebookUser class:
 
 	class FacebookUser(models.Model):
 
-Finally, add whatever fields you want the FacebookUser model to have to the class. (Remember, indentation is important in Python). The syntax is:
+Next, add whatever fields you want the FacebookUser model to have to the class. The syntax is:
 
 	{column_name} = models.{FieldType}({field_parameters})
 
@@ -816,7 +828,7 @@ Next, we want the name and the username columns to be strings which also shouldn
 	name = models.CharField(max_length=100)
 	username = models.CharField(max_length=50)
 
-Let's add a description column, which should be of type text, but can be null:
+Let's add a description column, which should be of type text, but can also be null:
 
 	description = models.TextField(null=True)
 
@@ -834,8 +846,6 @@ At the bottom, we can modify the FacebookUser's __unicode__ method so that it re
 
 	def __unicode__(self):
 		return self.name
-
-That's it! Feel free to look at the full code in the Github repository.
 
 IMPORTANT: Django doesn't do database migrations, so if you want to change a table, change its model in the models.py file, delete the table from the database (see [postgres commands](#postgrescommands)), and run another syncdb.
 
@@ -869,7 +879,7 @@ If you're looking for the code for show_all_users, go [here](#show_all_users)
 
 If you're looking for the code for show_user_info, go [here](#show_user_info)
 
-<a name="add_user">add_user()</a>
+<a name="add_user">**add_user()**</a>
 
 Whenever a client hits the /add_user/ route, we get sent an HTTP request that is handled by the add_user function. The view will interact dynamically with an HTML template, which you will create next. Here's how it will work:
 
@@ -934,7 +944,9 @@ That's it! You've written all of the back-end code required to add users to your
 
 Now, it's time to [go back to the guide](#djangopt2)
 
-<a name="show_all_users">show_all_users()</a>
+<a name="show_all_users">**show_all_users()**</a>
+
+Feel free to look at the full code on Github as you read this.
 
 Whenever a client hits the /show_all_users/ route, we don't really need to handle the HTTP request. We just want to get all of the users from the database and show them to the client. Since this is pretty simple, we don't even need a template. We can just return an HttpResponse object using the django.http library, which automatically renders the HTML you pass it.
 
@@ -957,7 +969,9 @@ Now, finish off the string by closing the unclosed tags and return the HttpRespo
 
 Now, it's time to [go back to the guide](#djangopt4)
 
-<a name="show_user_info">show_user_info()</a>
+<a name="show_user_info">**show_user_info()**</a>
+
+Feel free to look at the full code on Github as you read this.
 
 Let's try something a little more complicated. This time, whenever a client hits the /users/{username} route, he'll be passing an extra parameter that our view will need to handle. Otherwise, the code will be pretty similar to before:
 
@@ -1053,7 +1067,7 @@ Now, it's time to [go back to the guide](#djangopt3)
 
 <a name="tasks.py">**tasks.py**</a>
 
-Here, we're going to write a task that can be executed periodically. In this case, we'll make the task hit the Facebook Graph API and update the information for all of the users we have in the database.
+Here, we're going to write a task that can be executed periodically. In this case, we'll make the task hit the Facebook Graph API and update the information for all of the users we have in the database. Feel free to look at the full code on Github as you read this.
 
 First, take care of your imports:
 
