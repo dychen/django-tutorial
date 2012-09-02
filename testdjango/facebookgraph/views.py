@@ -5,7 +5,7 @@ import json
 # Django imports
 from django.http import HttpResponse
 from django.shortcuts import render_to_response
-from testdjango.models import FacebookUser
+from testdjango.facebookgraph.models import FacebookUser
 
 def add_user(request):
     errors = []

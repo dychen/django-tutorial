@@ -4,7 +4,7 @@ Guide: Script to Production
 
 Introduction
 ------------
-This is a pretty simple yet extensive tutorial on how to go from a simple Python script to a full-functioning production-ready web application. We'll be creating a simple application that allows an end-user to search for a user in Facebook's graph API and store that user's information. We'll also provide some simple API routes to display all users and get any user's information. Finally, we'll have a backend job that periodically hits Facebook to update all the information in our database.
+This is a pretty simple yet extensive tutorial on how to go from a simple Python script to a full-functioning production-ready web application. We'll be creating a small application that allows an end-user to search for a user in Facebook's graph API and store that user's information. We'll also provide some simple API routes to display all users and get any user's information. Finally, we'll have a backend job that periodically hits Facebook to update all the information in our database.
 
 The tools that we'll be using are:
 
@@ -30,7 +30,7 @@ This installs Python:
 
 	$ brew install python
 
-This adds Python to your PATH environment variable so you can run python commands from the terminal. Note that this is is not permanent, and you'll have to re-add it each time you restart the terminal, open up a new terminal window, or log out. To permanently add it to $PATH, you'll need to modify your .bashrc (see [appendix](#appendix) for instructions).
+This adds Python to your PATH environment variable so you can run python commands from the terminal. Note that this is is not permanent, and you'll have to re-add it each time you restart the terminal, open up a new terminal window, or log out. To permanently add it to $PATH, you'll need to modify your .bashrc (see [appendix](#updatingbashrc) for instructions).
 
 	$ export PATH=/usr/local/share/python:$PATH
 
@@ -50,7 +50,7 @@ Both a production-scale Heroku app and a private Git repo cost money, so you're 
 
 Set up Version Control with Git
 -------------------------------
-Git is an awesome and powerful version control system that saves snapshots of your code's history. It's like having a bunch of save states that you can jump to whenever you want, and it also allows you to collaborate with other people without having to worry about messing up each other's code. A repository also serves as a backup for your code, so if your computer crashes or somehow gets destroyed, you'll still have a remote version of your code that you can retrieve. For a brief introduction to Git, there's a tutorial in the [appendix](#appendix).
+Git is an awesome and powerful version control system that saves snapshots of your code's history. It's like having a bunch of save states that you can jump to whenever you want, and it also allows you to collaborate with other people without having to worry about messing up each other's code. A repository also serves as a backup for your code, so if your computer crashes or somehow gets destroyed, you'll still have a remote version of your code that you can retrieve. For a brief introduction to Git, there's a tutorial in the [appendix](#gittutorial).
 
 Go to your home directory:
 
@@ -68,9 +68,9 @@ Finally, set up your .gitignore file, which resides in the same level as your .g
 
 Set up the Project
 ------------------
-Now, we're going to set up the Django project. You can call it whatever you want, but ideally you'll give it the same name that Will gives the Heroku app to avoid any confusion down the line. In this tutorial, we called our project django-tutorial (when we made our git repo). Within the project, we can make one or more Django apps. In most cases, you'll just want one. I'm going to call the application we're going to make testdjango, but you'll probably want to give yours a more descriptive name whenever you make your own project.
+Now, we're going to set up the Django project. You can call it whatever you want, but ideally you'll give it the same name that Will gives the Heroku app to avoid any confusion down the line. In this tutorial, we called our main project directory django-tutorial (when we made our git repo). Within the main project directory, we can start a Django project. I'm going to call the project we're going to make testdjango, but you'll probably want to give yours a more descriptive name whenever you make your own project. Then, we're going to make an application for that project. Each project can have one or more applications, but we'll just make one for our purposes. We'll call it facebookgraph because it hits Facebook's Graph API and pulls user data from that.
 
-Go to your project directory:
+Go to your main project directory:
 
 	$ cd ~/django-tutorial
 
@@ -86,13 +86,17 @@ Install Django, psycopg2 (Django's Postgres adapter), and dj-database-url (makes
 
 	$ pip install Django psycopg2 dj-database-url
 
-Create your Django application in the project directory:
+Start your Django project in the project directory:
 
 	$ django-admin.py startproject testdjango .
 
+Now, you can make one or more applications for the project:
+
+	$ mkdir testdjango/facebookgraph
+	$ python manage.py startapp facebookgraph testdjango/facebookgraph
+
 Add your application to your application settings. In testdjango/settings.py:
 
-	```python
 	INSTALLED_APPS = (
 	    'django.contrib.auth',
 	    'django.contrib.contenttypes',
@@ -100,13 +104,12 @@ Add your application to your application settings. In testdjango/settings.py:
 	    'django.contrib.sites',
 	    'django.contrib.messages',
 	    'django.contrib.staticfiles',
-	    'testdjango',
+	    'testdjango/facebookgraph',
 	    # Uncomment the next line to enable the admin:
 	    # 'django.contrib.admin',
 	    # Uncomment the next line to enable admin documentation:
 	    # 'django.contrib.admindocs',
 	)
-	```
 
 Test to make sure the development server works:
 
@@ -115,7 +118,7 @@ Test to make sure the development server works:
 
 Set up the Database with Postgres
 ---------------------------------
-We're going to use Postgres for our database. Databases are great because they're the best way to quickly store, organize, and retrieve tons of information. They're like huge spreadsheets that don't suck. Each database is composed of tables, each of which is used to store information about something (e.g. a car company may have a car table, a customers table, an employees table, and a transactions table). Each table has a schema, which is composed of the columns that make up the table (e.g. for the car table, it could have a car name column, a quantity column, and a price column) and the data types of the columns (e.g. for that same table, the car name would be a string, or VARCHAR, the quantity would be an integer, and the price would be a float or decimal), as well as things like primary and foreign keys that you don't really have to worry about yet. Each table is used to store data in the form of tuples (or records). For example, the car table could have the tuple (2007 Honda Civic, 20, 15000.00). For this tutorial, you don't need to know SQL, but it's highly recommended that you learn it. Go to the [appendix](#appendix) for a list of a few quick Postgres commands.
+We're going to use Postgres for our database. Databases are great because they're the best way to quickly store, organize, and retrieve tons of information. They're like huge spreadsheets that don't suck. Each database is composed of tables, each of which is used to store information about something (e.g. a car company may have a car table, a customers table, an employees table, and a transactions table). Each table has a schema, which is composed of the columns that make up the table (e.g. for the car table, it could have a car name column, a quantity column, and a price column) and the data types of the columns (e.g. for that same table, the car name would be a string, or VARCHAR, the quantity would be an integer, and the price would be a float or decimal), as well as things like primary and foreign keys that you don't really have to worry about yet. Each table is used to store data in the form of tuples (or records). For example, the car table could have the tuple (2007 Honda Civic, 20, 15000.00). For this tutorial, you don't need to know SQL, but it's highly recommended that you learn it. Go to the [appendix](#postgrescommands) for a list of a few quick Postgres commands.
 
 Postgres should already be installed, but if it isn't:
 
@@ -127,17 +130,34 @@ Create a local development database (your Heroku app should already come with a 
 
 Make sure your application settings knows about the database. In testdjango/settings.py:
 
-	```python
 	import dj_database_url
 	...
 	DATABASES = {'default': dj_database_url.config(default='postgres://:@localhost:5432/testdjango_development')}
-	```
 
 This should replace the current DATABASES environment variable in settings.py. The structure should be:
 
 	default='postgres://{USER}:{PASSWORD}@localhost:{PORT}/{NAME}'
 
 So, in our example, we're using the testdjango_development database with no user and password on port 5432.
+
+
+Writing an Application with Django
+----------------------------------
+In this section, I will give you a brief overview of creating a full-functioning Django application. Django is a lightweight web framework (sort of like Rails, but much lighter) that makes it easy to develop web applications. It's not at all meant to be a full guide. Rather, it's a brief introduction so that you can quickly get something running. I strongly encourage you to check out the [Django tutorial](http://www.djangobook.com/en/1.0/), which is extremely comprehensive and very straightforward and easy to understand.
+
+Previously, you made your Django app (called facebookgraph). Now, we're going to actually add functionality to that. Take a look at your project directory (testdjango):
+
+	$ cd ~/django-tutorial/testdjango && ls
+	__init__.py	settings.py	urls.py		wsgi.py
+
+Take a look at your application directory:
+
+	$ cd ~/django-tutorial/testdjango/facebookgraph && ls
+	__init__.py	models.py	tests.py	views.py
+
+Here, you'll find 
+
+For a walkthrough on how the code works, look at the appendix.
 
 
 Deploy to Heroku
@@ -152,6 +172,7 @@ Add the following to your .git/config file:
 
 Log into Heroku:
 
+	$ cd ~/django-tutorial
 	$ heroku login
 
 There are two important files that should be in your project directory that Heroku uses.
@@ -179,7 +200,7 @@ Create a file in your project directory called requirements.txt:
 
 Install all packages that haven't been installed yet:
 
-	$ pip install -r requirements.txt
+	$ sudo pip install -r requirements.txt
 
 If you want to add any packages to that in the future, just add the package to your requirements.txt and run the same command. Alternatively, you can run the following, which installs the package and writes all of the packages currently managed by pip to your requirements.txt file:
 
@@ -282,9 +303,10 @@ Add the following line to the bottom of the same file. This says that Celery is 
 
 	BROKER_URL = 'amqp://guest:guest@localhost:5672//'
 
-Now, you can run stuff locally. In three separate tabs, run these three commands:
+Now, you can run stuff locally. In four separate tabs, run these three commands:
 
 	$ rabbitmq-server
+	$ python manage.py runserver
 	$ python manage.py celeryd
 	$ python manage.py celerybeat
 
@@ -296,18 +318,14 @@ To get this running on Heroku, first, find out what the BROKER_URL is.
 
 Make a file in your testdjango directory called production_settings.py:
 
-	```python
 	DEBUG = False
 	TEMPLATE_DEBUG = False
 	BROKER_URL = '{Get this from CLOUDAMQP_URL}'
-	```
 
 Then, add the following lines to the VERY bottom of testdjango/settings.py (you want to make sure the import overwrites all variables defined in the file):
 
-	```python
 	if 'heroku' in os.environ['_']:
 	    from production_settings import *
-	```
 
 You'll also need to add the templates 404.html and 500.html to your templates directory. You can copy those over from the code that I have.
 
@@ -344,14 +362,19 @@ Try scaling up the workers. Initially, you'll have 0 workers running for your ne
 Appendix
 ========
 
+
 Notes
 -----
-pip install -r requirements.txt
+sudo pip install -r requirements.txt
 brew install rabbitmq
 
+
+<a id="updatingbashrc"></a>
 Updating .bashrc
 ----------------
 
+
+<a id="gittutorial"></a>
 Git Tutorial
 ------------
 **Initializing**
@@ -506,6 +529,7 @@ If you merge the changes on your local machine, first switch to your local maste
 That was a quick and dirty introduction to Git, but there's a lot more that it has to offer. There are many awesome [Git tutorials](http://sixrevisions.com/resources/git-tutorials-beginners/) online if you want to learn more.
 
 
+<a id="postgrescommands"></a>
 Postgres Commands
 -----------------
 Here are a few commands to help you navigate your database (some are Postgres-specific):

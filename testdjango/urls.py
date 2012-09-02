@@ -1,5 +1,5 @@
 from django.conf.urls import patterns, include, url
-from testdjango.views import add_user, show_all_users, show_user_info
+from testdjango.facebookgraph.views import add_user, show_all_users, show_user_info
 
 # Uncomment the next two lines to enable the admin:
 # from django.contrib import admin
