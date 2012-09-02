@@ -76,9 +76,11 @@ Go to your home directory:
 
 	$ cd ~
 
-Clone the Github repo to your local machine. This copies everything in the remote Github repo to a directory called django-tutorial in the current directory (which should be your home directory) on your local machine:
+Clone the Github repo to your local machine. This copies everything in the remote Github repo called {github_repo} to a directory with the same name in the current directory (which should, at the moment, be your home directory) on your local machine:
 
-	$ git clone git@github.com:Adaptly/django-tutorial.git
+	$ git clone git@github.com:{github_repo}.git
+
+If Will just made the repo for you, it should be completely empty except for possibly a README.md file and a .gitignore file. For this tutorial, I'm just going to clone the Adaptly/django-tutorial repo, which will make ~/django-tutorial the root project directory. You won't want to do this, however, because the repo already has a full-functioning Django project! Be sure to either clone over the repo that Will made you or make a new repo on Github and clone that.
 
 Finally, set up your .gitignore file, which resides in the same level as your .git directory (i.e., your project directory, so if you ls -al, you should see both the .git folder and the .gitignore file). The .gitignore file makes sure your useless build artifacts and other non-project-specific files aren't tracked. In .gitignore, add the following lines:
 
