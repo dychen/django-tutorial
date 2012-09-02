@@ -72,6 +72,8 @@ Both a production-scale Heroku app and a private Git repo cost money, so you're 
 -----------------------------------------------
 Git is an awesome and powerful version control system that saves snapshots of your code's history. It's like having a bunch of save states that you can jump to whenever you want, and it also allows you to collaborate with other people without having to worry about messing up each other's code. A repository also serves as a backup for your code, so if your computer crashes or somehow gets destroyed, you'll still have a remote version of your code that you can retrieve. For a brief introduction to Git, there's a tutorial in the [appendix](#gittutorial).
 
+Note that this assumes you already have a Github account. If you don't, follow [this simple 2-minute guide](#https://help.github.com/articles/set-up-git).
+
 Go to your home directory:
 
 	$ cd ~
@@ -417,6 +419,20 @@ Install all packages that haven't been installed yet:
 
 	$ sudo pip install -r requirements.txt
 
+Check if you have an SSH key (you should already if you've come this far):
+
+	$ ls ~/.ssh/
+
+If you see id_rsa and id_rsa.pub, then you already have an ssh key. If not, generate one:
+
+	$ ssh-keygen -t rsa -C
+
+Add it to your Heroku application:
+
+	$ heroku keys:add
+
+Because of the way Heroku's SSH system is set up, you might have problems if you have more than one Heroku account. If you're having problems, read [this](http://martyhaught.com/articles/2010/12/14/managing-multiple-heroku-accounts/).
+
 Deploy your application to Heroku:
 
 	$ git add .
@@ -579,6 +595,7 @@ Suppose you want to continue working on your project from a different computer. 
 	$ brew install postgresql
 	$ createdb testdjango_development
 	$ brew install rabbitmq
+	$ heroku keys:add
 
 
 <a name="updatingbashrc">Updating .bashrc</a>
