@@ -375,13 +375,15 @@ Congratulations, you've made your web application! Locally, you should be able t
 
 <a name="heroku>Deploy to Heroku</a>
 ----------------------------------
-Heroku is an online web service that runs your production application (kind of like a server). Whereas your development application will be run locally, your production application will live on Heroku.
+Heroku is an online web service that runs your production application. Whereas your development application will be run locally, your production application will live on Heroku.
 
 Add the following to your .git/config file:
 
 	[remote "heroku"]
 	        url = git@heroku.com:{app_name}.git
 	        fetch = +refs/heads/*:refs/remotes/heroku/*
+
+Your Heroku application should've already been created in the section [Request a Heroku Application and a Git Repository](#requestapps), so here, {app_name} is just the name of that application. In my case, the application name is django-tutorial, but yours should be different. If you try to set your "heroku" remote url to git@heroku.com:django-tutorial.git, you won't be able to push to it because you won't have the necessary permissions.
 
 Log into Heroku:
 
@@ -421,7 +423,7 @@ Deploy your application to Heroku:
 	$ git commit -m "Set up the project and application with Postgres. Created an empty Procfile and a requirements.txt with all necessary dependencies."
 	$ git push heroku master
 
-Check that everything is working. This gives you a list of currently running processes. Eventually, we'll have 3 processes: one for the web application, one for the celery worker that runs our background job, and one for celerybeat, which schedules the periodic tasks the celery worker performs.
+Check that everything is working. This gives you a list of currently running processes. Eventually, we'll have 3 processes: one for the web application, one for the celery worker that runs our background job, and one for celerybeat, which schedules the periodic tasks the celery worker performs. The --app parameter specifies the application name. Again, your application won't be called django-tutorial, so just replace that with whatever your app is called.
 
 	$ heroku ps --app django-tutorial
 
@@ -581,6 +583,8 @@ Ror Python, do the same thing, except the path will be /usr/local/share/python.
 ------------------------------------
 **Initializing**
 
+If you've already cloned an empty repository for your project from Github or another remote, you can skip this entire Initializing section.
+
 Go to your home directory:
 
 	$ cd ~
@@ -601,7 +605,7 @@ It makes a hidden .git folder in your current directory where all the Git goodie
 In the file .git/config, add the following lines:
 
 	[remote "origin"]
-	        url = git@github.com:Adaptly/test-django.git
+	        url = git@github.com:{github_repo}.git
 	        fetch = +refs/heads/*:refs/remotes/origin/*
 
 config is the configuration file Git looks at whenever you execute git commands. It aliases a bunch of commands so you only have to type
@@ -610,10 +614,9 @@ config is the configuration file Git looks at whenever you execute git commands.
 
 instead of
 
-	$ git fetch git@github.com:Adaptly/test-django.git
+	$ git fetch git@github.com:{github_repo}.git
 
 "Remote" means the remote repository you push your code to or pull/fetch your code from. For our project, we'll have two remotes: Github and Heroku.
-
 
 **Fetching and Branching**
 
