@@ -18,9 +18,7 @@ The tools that we'll be using are:
 
 Install Python, Pip, and Venv
 -----------------------------
-Obviously, to start a Django project, you need to have Python installed. This requires [Homebrew](https://github.com/mxcl/homebrew/wiki/installation), which should already be installed. We're also going to install [Pip](http://pypi.python.org/pypi/pip), which is an easy way to install the Python packages we'll need later. Finally, we're going to install [VirtualEnv](http://pypi.python.org/pypi/virtualenv), which creates an isolated Python environment for our Django project. This is important because we know that our code will work with a particular version of Python (the one we are currently using). It makes sure the code in our project doesn't break when we inevitably do machine-wide Python updates some time in the future.
-
-First, open up a terminal.
+Obviously, to start a Django project, you need to have Python installed. This requires [Homebrew](https://github.com/mxcl/homebrew/wiki/installation), which should already be installed. We're also going to install [Pip](http://pypi.python.org/pypi/pip), which is an easy way to install the Python packages we'll need later. Finally, we're going to install [VirtualEnv](http://pypi.python.org/pypi/virtualenv), which creates an isolated Python environment for our Django project. This is important because we know that our code will work with a particular version of Python (the one we are currently using). It makes sure the code in our project doesn't break when we inevitably do machine-wide Python updates some time in the future. First, open up a terminal.
 
 This installs Homebrew:
 
@@ -162,7 +160,7 @@ We're going to use Postgres for our database. Databases are great because they'r
 
 Create a local development database (your Heroku app should already come with a production database so you don't need to worry about that):
 
-	$ created testdjango_development
+	$ createdb testdjango_development
 
 Make sure your application settings knows about the database. In testdjango/settings.py:
 
@@ -257,40 +255,40 @@ Here's an outline of what we're going to do:
 1. Copy the code in django-tutorial/testdjango/facebookgraph/models.py into your own models.py. The code itself along with a brief explanation that you should definitely look at is in the [appendix](#models.py).
 2. Sync the model with the database (NOTE: The first time you run syncdb, it's going to ask you to create a superuser. This isn't necessary, but you can do it if you want to use the [Admin interface](https://docs.djangoproject.com/en/dev/ref/contrib/admin/), which is a nice GUI that you can use to manage your site. I won't cover it here).
 
-	python manage.py syncdb
+		python manage.py syncdb
 
 **Making an Add User View**
 
 1. Copy the add_user function and the two helper functions (retrieve_facebook_user_data and add_user_to_db) in django-tutorial/testdjango/facebookgraph/views.py. The code itself along with a brief explanation that you should definitely look at is in the [appendix](#views.py).
 2. Add the following to the urlpatterns tuple in testdjango/urls.py. This says that if someone hits the url your_base_url/add_user, it will handle the response using the add_user function in views.py:
 
-	url(r'^add_user/$', add_user),
+		url(r'^add_user/$', add_user),
 
 **Making an Add User Template**
 
 1. Make a templates directory in your project directory (testdjango):
 
-	$ cd ~/django-tutorial/testdjango
-	$ mkdir templates
+		$ cd ~/django-tutorial/testdjango
+		$ mkdir templates
 
 2. Copy the code in django-tutorial/testdjango/templates/add_user_form.html. The code itself along with a brief explanation that you should definitely look at is in the [appendix](#add_user_form.html).
 3. Update your testdjango/settings.py file. Add this to the top:
 
-	import os
+		import os
 
 4. Update the TEMPLATE_DIRS variable in testdjango/settings.py:
 
-	TEMPLATE_DIRS = (
-	    # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
-	    # Always use forward slashes, even on Windows.
-	    # Don't forget to use absolute paths, not relative paths.
-	    os.path.join(os.path.dirname(__file__), 'templates').replace('\\','/'),
-	)
+		TEMPLATE_DIRS = (
+	    	# Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
+	    	# Always use forward slashes, even on Windows.
+	    	# Don't forget to use absolute paths, not relative paths.
+	    	os.path.join(os.path.dirname(__file__), 'templates').replace('\\','/'),
+		)
 
 5. Start up the development server in a new terminal window:
 
-	$ cd ~/django-tutorial
-	$ python manage.py runserver
+		$ cd ~/django-tutorial
+		$ python manage.py runserver
 
 6. Hit the route to see it in action. In a web browser, go to the address localhost:8000/add_user. Try adding the users 'Coca-Cola' and 'Pepsi.'
 
@@ -299,13 +297,13 @@ Here's an outline of what we're going to do:
 1. Copy the show_all_users function in django-tutorial/testdjango/facebookgraph/views.py. The code itself along with a brief explanation that you should definitely look at is in the [appendix](#views.py).
 2. Add the following to the urlpatterns tuple in testdjango/urls.py. This says that if someone hits the url your_base_url/all_users, it will handle the response using the show_all_users function in views.py:
 
-	url(r'^all_users/$', show_all_users),
+		url(r'^all_users/$', show_all_users),
 
 3. Hit the route to see it in action. In a web browser, go to the address localhost:8000/all_users
 4. Copy the show_user_info function in django-tutorial/testdjango/facebookgraph/views.py. The code itself along with a brief explanation that you should definitely look at is in the [appendix](#views.py).
 5. Add the following to the urlpatterns tuple in testdjango/urls.py. This says that if someone hits the url your_base_url/users/{username}, it will handle the response using the show_user_info function in views.py. The regex means accept all input strings of one or more characters that don't include a '/'. The regex is automatically passed as the second parameter to the function show_user_info:
 
-	url(r'^users/([^/]+)/$', show_user_info),
+		url(r'^users/([^/]+)/$', show_user_info),
 
 6. Hit the route to see it in action. In a web browser, go to the address localhost:8000/users/coca-cola.
 
@@ -314,21 +312,21 @@ Here's an outline of what we're going to do:
 1. Copy the code in django-tutorial/testdjango/facebookgraph/tasks.py. The code along with a brief explanation that you should definitely look at is in the [appendix](#tasks.py).
 2. Comment out the run every 10 minutes line and uncomment the run every 3 seconds line:
 
-	#@periodic_task(run_every=crontab(minute="*/10"))
-	@periodic_task(run_every=timedelta(seconds=3))
+		#@periodic_task(run_every=crontab(minute="*/10"))
+		@periodic_task(run_every=timedelta(seconds=3))
 
 3. In four separate terminal windows, run these three commands:
 
-	$ rabbitmq-server
-	$ python manage.py runserver
-	$ python manage.py celeryd
-	$ python manage.py celerybeat
+		$ rabbitmq-server
+		$ python manage.py runserver
+		$ python manage.py celeryd
+		$ python manage.py celerybeat
 
 4. Now you should be able to see realtime updates to your database information. In a web browser, go to the address localhost:8000/users/coca-cola and keep refreshing the page.
 5. Shut down your worker processes and re-comment the task settings (you don't want to hit your rate limits)
 
-	@periodic_task(run_every=crontab(minute="*/10"))
-	#@periodic_task(run_every=timedelta(seconds=3))
+		@periodic_task(run_every=crontab(minute="*/10"))
+		#@periodic_task(run_every=timedelta(seconds=3))
 
 Congratulations, you've made your web application! Locally, you should be able to add users to your database, view user information, and automatically periodically update that information. Hopefully, you understand all the code here. If not, you *really* should look at the code section of the [appendix](#code). *Seriously.* Now, it's time to put our app into production.
 
@@ -350,8 +348,8 @@ Log into Heroku:
 
 There are two important files that should be in your project directory that Heroku uses.
 
-* Procfile: Heroku uses this to alias certain commands to processes. You will be using the processes you define in this file to use Heroku workers to run whatever commands you alias.
-* requirements.txt: Heroku uses this to determine what libraries and dependencies need to be installed. Every time you push to Heroku, it will look at requirements.txt and install all the listed dependencies. For example, so far, we're using Django, psycopg2, and dj-database-url on our local machine, so we need to make Heroku install those as well.
+* **Procfile**: Heroku uses this to alias certain commands to processes. You will be using the processes you define in this file to use Heroku workers to run whatever commands you alias.
+* **requirements.txt**: Heroku uses this to determine what libraries and dependencies need to be installed. Every time you push to Heroku, it will look at requirements.txt and install all the listed dependencies. For example, so far, we're using Django, psycopg2, and dj-database-url on our local machine, so we need to make Heroku install those as well.
 
 Create an empty file in your project base directory called Procfile.
 
@@ -497,10 +495,10 @@ Appendix
 * [A quick introduction to git](#gittutorial)
 * [A small Postgres reference](#postgrescommands)
 * [Code used in the guide](#code)
-- [models.py](#models.py)
-- [views.py](#views.py)
-- [add_user_form.html](#add_user_form.html)
-- [tasks.py](#tasks.py)
+	- [models.py](#models.py)
+	- [views.py](#views.py)
+	- [add_user_form.html](#add_user_form.html)
+	- [tasks.py](#tasks.py)
 
 <a id="setup"></a>
 Quick Setup Instructions
