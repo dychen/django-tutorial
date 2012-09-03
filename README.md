@@ -597,7 +597,7 @@ Congratulations, you're done! Now, go grab yourself a beer and let your applicat
 		$ pwd
 		/Users/username/project-folder
 		$ ls
-		Procfile    requirements.txt    venv    README.md    manage.py    project-name
+		README.md	venv	Procfile	requirements.txt	manage.py	project-name	
 
 * Have you activated your virtual environment?
 
@@ -605,7 +605,7 @@ Congratulations, you're done! Now, go grab yourself a beer and let your applicat
 
 * Are your directories structured correctly?
 
-> Look at the Github code for reference.
+	* Look at the Github code for reference.
 
 * Is your requirements.txt file up-to-date?
 
@@ -631,7 +631,7 @@ Congratulations, you're done! Now, go grab yourself a beer and let your applicat
 
 * Do you have a copy of the development database?
 
-> Curl it from a remote location:
+	* Curl it from a remote location:
 
 		$ mkdir tmp
 		$ curl -o tmp/mydatabase.db url-to-database // If you're curling from a remote url
@@ -639,7 +639,7 @@ Congratulations, you're done! Now, go grab yourself a beer and let your applicat
 		$ pg_restore -c -d your_database_name tmp/mydatabase.db
 		$ rm -r tmp
 
-> Or make your own:
+	* Or make your own:
 
 		$ created your_database_name
 
@@ -648,6 +648,12 @@ Congratulations, you're done! Now, go grab yourself a beer and let your applicat
 		$ python manage.py syncdb
 
 **Heroku Checklist**
+
+* Did you push your most recent version of the code to Heroku?
+
+		$ git fetch origin
+		$ git rebase origin/master
+		$ git push heroku master
 
 * Is your SSH Key added to your Heroku account?
 
