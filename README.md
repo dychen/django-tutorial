@@ -285,6 +285,7 @@ Take a look at your application directory:
 * **views.py:** This defines all of the views your applications will use. Views are Django's way of dynamically handling user requests. Each route defined in urls.py will be linked to a specific function in views.py that handles the request to that route.
 
 Here's an outline of what we're going to do:
+
 1. [Make a FacebookUser model that mirrors the responses that we get from the Facebook Graph](#djangopt1)
 2. [Make a view that lets the user search for a Facebook user and add that user to the database](#djangopt2)
 3. [Make a template to render that view](#djangopt3)
