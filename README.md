@@ -376,7 +376,7 @@ This says that if someone hits the url http://yourbaseurl/users/{username}, it w
 Congratulations, you've made your web application! Locally, you should be able to add users to your database, view user information, and automatically periodically update that information. Hopefully, you understand all the code here. If not, you *really* should look at the code section of the [appendix](#code). *Seriously.* Now, it's time to put our app into production.
 
 
-<a name="heroku>Deploy to Heroku</a>
+<a name="heroku">Deploy to Heroku</a>
 ----------------------------------
 Heroku is an online web service that runs your production application. Whereas your development application will be run locally, your production application will live on Heroku.
 
@@ -658,7 +658,7 @@ Congratulations, you're done! Now, go grab yourself a beer and let your applicat
 		$ git rebase origin/master
 		$ git push heroku master
 
-* Is your SSH Key added to your Heroku account?
+* Is your SSH key added to your Heroku account?
 
 		$ heroku keys:add
 
