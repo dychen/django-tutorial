@@ -636,15 +636,15 @@ Congratulations, you're done! Now, go grab yourself a beer and let your applicat
 
 	* Curl it from a remote location:
 
-		$ mkdir tmp
-		$ curl -o tmp/mydatabase.db url-to-database // If you're curling from a remote url
-		$ curl -o tmp/mydatabase.db `heroku pgbackups:url --app app-name` // If you're curling from Heroku
-		$ pg_restore -c -d your_database_name tmp/mydatabase.db
-		$ rm -r tmp
+			$ mkdir tmp
+			$ curl -o tmp/mydatabase.db url-to-database // If you're curling from a remote url
+			$ curl -o tmp/mydatabase.db `heroku pgbackups:url --app app-name` // If you're curling from Heroku
+			$ pg_restore -c -d your_database_name tmp/mydatabase.db
+			$ rm -r tmp
 
 	* Or make your own:
 
-		$ created your_database_name
+			$ created your_database_name
 
 * Is your database synced?
 
