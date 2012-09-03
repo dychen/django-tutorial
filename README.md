@@ -14,6 +14,7 @@ Index
 * [Deploy to Heroku](#heroku)
 * [Set up the Processes (GUnicorn Server, Celeryd Worker, Celerybeat Scheduler)](#processes)
 * [Appendix](#appendix)
+	* [Troubleshooting](#troubleshooting)
 	* [How to continue working on your project on a different computer](#setup)
 	* [How to update your .bash_profile to run commands when you get the -bash: command not found error](#updatingbashprofile)
 	* [A quick introduction to git](#gittutorial)
@@ -102,7 +103,7 @@ Create a virtual Python environment for your project. This makes a venv director
 
 	$ virtualenv venv --distribute
 
-This "activates" the virtual environment. Basically, it modify your $PATH environment variable to use the new Python environment instead of your machine's (among doing a few other things like changing your shell prompt):
+This "activates" the virtual environment so that you're running the isolated version of Python:
 
 	$ source venv/bin/activate
 
@@ -110,7 +111,7 @@ To "deactivate" the virtual environment do the following (or just close the wind
 
 	$ deactivate
 
-IMPORTANT: Every time you want to work on your project, when you go into the root project directory, you have to load up the virtual environment (it doesn't do this for you automatically, unlike with Rails).
+**IMPORTANT:** Every time you want to work on your project, when you go into the root project directory, you have to load up the virtual environment (it doesn't do this for you automatically, unlike with Rails).
 
 Install Django, psycopg2 (Django's Postgres adapter), and dj-database-url (makes it easier to configure the database with Heroku)
 
@@ -425,11 +426,19 @@ Check if you have an SSH key (you should already if you've come this far):
 
 If you see id_rsa and id_rsa.pub, then you already have an ssh key. If not, generate one:
 
-	$ ssh-keygen -t rsa -C
+	$ ssh-keygen -t rsa -C {key_name}
 
 Add it to your Heroku application:
 
 	$ heroku keys:add
+
+To see a list of the SSH keys tied to an account:
+
+	$ heroku keys --long
+
+To remove a key:
+
+	$ heroku keys:remove {key_name}
 
 Because of the way Heroku's SSH system is set up, you might have problems if you have more than one Heroku account. If you're having problems, read [this](http://martyhaught.com/articles/2010/12/14/managing-multiple-heroku-accounts/).
 
@@ -567,6 +576,7 @@ Congratulations, you're done! Now, go grab yourself a beer and let your applicat
 <a name="appendix">Appendix</a>
 -----------------------------
 
+* [Troubleshooting](#troubleshooting)
 * [How to continue working on your project on a different computer](#setup)
 * [How to update your .bash_profile to run commands when you get the -bash: command not found error](#updatingbashprofile)
 * [A quick introduction to git](#gittutorial)
@@ -576,6 +586,110 @@ Congratulations, you're done! Now, go grab yourself a beer and let your applicat
 	* [views.py](#views.py)
 	* [add_user_form.html](#add_user_form.html)
 	* [tasks.py](#tasks.py)
+
+
+<a name="troubleshooting">Troubleshooting</a>
+-------------------------------------------
+**Local Checklist**
+
+* Are you in the right directory?
+
+		$ pwd
+		/Users/username/project-folder
+		$ ls
+		Procfile    requirements.txt    venv    README.md    manage.py    project-name
+
+* Have you activated your virtual environment?
+
+		$ source venv/bin/activate
+
+* Are your directories structured correctly?
+
+> Look at the Github code for reference.
+
+* Is your requirements.txt file up-to-date?
+
+		Django==1.4.1
+		amqplib==1.0.2
+		anyjson==0.3.3
+		billiard==2.7.3.12
+		celery==3.0.8
+		distribute==0.6.27
+		dj-database-url==0.2.1
+		django-celery==3.0.6
+		gunicorn==0.14.6
+		psycopg2==2.4.5
+		python-dateutil==1.5
+		pytz==2012d
+		wsgiref==0.1.2
+
+* Are your requirements installed?
+
+		$ pip install -r requirements.txt
+		$ brew install postgresql
+		$ brew install rabbitmq
+
+* Do you have a copy of the development database?
+
+> Curl it from a remote location:
+
+		$ mkdir tmp
+		$ curl -o tmp/mydatabase.db url-to-database // If you're curling from a remote url
+		$ curl -o tmp/mydatabase.db `heroku pgbackups:url --app app-name` // If you're curling from Heroku
+		$ pg_restore -c -d your_database_name tmp/mydatabase.db
+		$ rm -r tmp
+
+> Or make your own:
+
+		$ created your_database_name
+
+* Is your database synced?
+
+		$ python manage.py syncdb
+
+**Heroku Checklist**
+
+* Is your SSH Key added to your Heroku account?
+
+		$ heroku keys:add
+
+* Is your database synced?
+
+		$ heroku run python manage.py syncdb
+
+* Are all of your processes defined in your Procfile?
+
+		$ cat Procfile
+		web: gunicorn testdjango.wsgi -b 0.0.0.0:$PORT
+		celeryd: python manage.py celeryd -E -B --loglevel=INFO
+		celerybeat: python manage.py celerybeat
+
+* Are all your processes running?
+
+		$ heroku ps
+		$ heroku ps:scale process_name=1
+
+**Specific Error Messages**
+
+	Error: You appear not to have the 'psql' program installed or on your path.
+
+> If you're on a free database plan, you're not going to be able to run the dbshell via Heroku. If you want to look at the database, drop directly into Postgres:
+>
+>		$ heroku pg:psql
+
+	!  Your key with fingerprint xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx is not authorized to access your-heroku-application.
+
+> You need to add your SSH key to Heroku:
+>
+>		$ heroku keys:add
+
+	!    This key is already in use by another account. Each account must have a unique key.
+
+> You already added your SSH key to another Heroku account. See [here](http://martyhaught.com/articles/2010/12/14/managing-multiple-heroku-accounts/) for managing multiple Heroku accounts.
+
+	bash: {command}: command not found
+
+> The command you want to execute isn't in your current $PATH. Read [this](#updatingbashprofile)
 
 <a name="setup">Quick Setup Instructions</a>
 ------------------------------------------
@@ -596,6 +710,7 @@ Suppose you want to continue working on your project from a different computer. 
 	$ createdb testdjango_development
 	$ brew install rabbitmq
 	$ heroku keys:add
+	$ python manage.py syncdb
 
 
 <a name="updatingbashprofile">Updating .bash_profile</a>
