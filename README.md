@@ -607,6 +607,11 @@ Congratulations, you're done! Now, go grab yourself a beer and let your applicat
 
 	* Look at the Github code for reference.
 
+* Do you have the most recent version of the code?
+
+		$ git fetch origin
+		$ git rebase origin/master
+
 * Is your requirements.txt file up-to-date?
 
 		Django==1.4.1
