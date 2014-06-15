@@ -135,7 +135,7 @@ Add your application to your project settings. In testdjango/settings.py:
 	    'django.contrib.sites',
 	    'django.contrib.messages',
 	    'django.contrib.staticfiles',
-	    'testdjango/facebookgraph',
+	    'testdjango.facebookgraph',
 	    # Uncomment the next line to enable the admin:
 	    # 'django.contrib.admin',
 	    # Uncomment the next line to enable admin documentation:
